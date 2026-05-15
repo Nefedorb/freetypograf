@@ -8,7 +8,10 @@
 - `docs/DESIGN_SYSTEM.md` - короткий указатель на корневые правила.
 - `docs/SECURITY_PROTOCOL.md` - правила безопасности desktop runtime.
 - `docs/ARCHITECTURE.md` - архитектура приложения.
-- `docs/MACOS.md` - заметки по macOS-сборке и Accessibility-разрешениям.
+- `docs/MACOS.md` - заметки по macOS runtime и Accessibility-разрешениям.
+- `docs/WINDOWS_TESTING.md` - чеклист Windows-тестирования.
+- `docs/RELEASE_PROCESS.md` - процесс публикации GitHub Releases.
+- `docs/GITHUB_DISTRIBUTION_PLAN.md` - roadmap единого GitHub-репозитория.
 
 ## Материалы задачи
 
@@ -32,4 +35,5 @@
 ## Сборочные артефакты
 
 - `out/` - статический экспорт Next.js.
-- macOS `.app`/`.dmg` собираются на macOS через `pnpm tauri build`.
+- Windows `.msi`/`setup.exe` собираются через GitHub Actions на Windows runner.
+- macOS `.app`/`.dmg` собираются через GitHub Actions на macOS runner.

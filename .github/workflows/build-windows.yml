@@ -1,4 +1,4 @@
-name: Build macOS
+name: Build Windows
 
 on:
   workflow_dispatch:
@@ -7,9 +7,9 @@ on:
       - main
 
 jobs:
-  build-macos:
-    name: Build unsigned macOS app
-    runs-on: macos-latest
+  build-windows:
+    name: Build unsigned Windows app
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -40,16 +40,18 @@ jobs:
       - name: Build Tauri bundle
         run: pnpm tauri build
 
-      - name: Upload DMG artifact
+      - name: Upload installers
         uses: actions/upload-artifact@v7
         with:
-          name: freetypograf-macos-dmg
-          path: src-tauri/target/release/bundle/dmg/*
+          name: freetypograf-windows-installers
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
           if-no-files-found: warn
 
-      - name: Upload app artifact
+      - name: Upload portable app
         uses: actions/upload-artifact@v7
         with:
-          name: freetypograf-macos-app
-          path: src-tauri/target/release/bundle/macos/*
+          name: freetypograf-windows-portable
+          path: src-tauri/target/release/*.exe
           if-no-files-found: warn

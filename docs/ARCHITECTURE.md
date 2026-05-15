@@ -47,7 +47,8 @@ Runtime-команды не принимают пользовательский 
 
 ## Границы MVP
 
-- Эта папка является macOS-вариантом приложения и собирается на macOS.
-- Windows-сборка остается в соседнем проекте `typograf`.
+- Репозиторий является единым cross-platform продуктом для Windows и macOS.
+- Платформенные отличия desktop runtime находятся в `src-tauri/src/lib.rs` под `#[cfg(windows)]` и `#[cfg(target_os = "macos")]`.
+- Windows и macOS распространяются через общие GitHub Releases.
 - Только plain text. RTF/HTML preservation остается за пределами MVP.
 - Нет PostgreSQL/backend: приложение локальное. Если появится cloud sync, правило PostgreSQL из `agents.md` станет обязательным для серверного контура.

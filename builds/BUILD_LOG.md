@@ -201,3 +201,22 @@
 - `pnpm test` - успешно, 17 тестов;
 - `pnpm build` - успешно;
 - `cargo check` в `src-tauri` - успешно.
+
+## 2026-05-15 Unified GitHub distribution
+
+Репозиторий `Nefedorb/freetypograf` переведен из macOS-only в единый продуктовый репозиторий FreeTypograf:
+
+- обновлен bundle identifier на `ru.nefedorb.freetypograf`;
+- добавлены GitHub Actions workflows для Windows, macOS и release по тегу `v*`;
+- actions обновлены до Node 24-compatible версий;
+- README оформлен как продуктовая страница со ссылками на Releases и скриншоты;
+- добавлены `docs/WINDOWS_TESTING.md`, `docs/MACOS_TESTING.md`, `docs/RELEASE_PROCESS.md`, `docs/GITHUB_DISTRIBUTION_PLAN.md`;
+- добавлен локальный `scripts/sync.ps1` для проверки, commit и push готовых изменений.
+
+Проверки:
+
+- `pnpm typecheck` - успешно;
+- `pnpm test` - успешно, 17 тестов;
+- `pnpm build` - успешно;
+- `cargo check` в `src-tauri` - успешно;
+- `pnpm tauri build` на Windows - успешно, собраны `FreeTypograf_0.1.0_x64_en-US.msi` и `FreeTypograf_0.1.0_x64-setup.exe`.
