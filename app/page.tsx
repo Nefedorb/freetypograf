@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Type,
-  WandSparkles,
   type LucideIcon
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +51,6 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { runClipboardTypograf } from "@/lib/clipboard-flow";
 import {
   onTauriEvent,
   registerShortcut,
@@ -70,6 +68,11 @@ import { useSettings } from "@/hooks/use-settings";
 
 const SAMPLE_TEXT =
   'ООО "Ромашка" -- 12 мая 2026 г., тел. +7 999 123-45-67, цена 1500 руб. Все еще тестируем.';
+
+const DONATION_URLS = {
+  boosty: "https://boosty.to/evgenbond/donate",
+  donationAlerts: "https://www.donationalerts.com/r/evgenbond"
+} as const;
 
 const PROFILE_LABELS: Record<TypografProfile, string> = {
   default: "Стандартный",
@@ -148,11 +151,10 @@ const SECTIONS: SettingsSection[] = [
 ];
 
 export default function SettingsPage() {
-  const { settings, patchSettings, lastResult, setLastResult } = useSettings();
+  const { settings, patchSettings, lastResult } = useSettings();
   const [activeSection, setActiveSection] = useState<SettingsSectionId>("system");
   const [hotkeyDraft, setHotkeyDraft] = useState(settings.hotkey);
   const [previewInput, setPreviewInput] = useState(SAMPLE_TEXT);
-  const [isRunning, setIsRunning] = useState(false);
 
   const activeSectionMeta = SECTIONS.find((section) => section.id === activeSection) ?? SECTIONS[0];
   const preview = useMemo(
@@ -190,13 +192,6 @@ export default function SettingsPage() {
 
     return () => cleanup?.();
   }, [patchSettings]);
-
-  const runNow = async () => {
-    setIsRunning(true);
-    const result = await runClipboardTypograf(settings);
-    setLastResult(settings.privacy.rememberLastResult ? result.lastResult : null);
-    setIsRunning(false);
-  };
 
   const updateCategory = (id: RuleCategoryId, value: boolean) => {
     patchSettings((current) => ({
@@ -257,13 +252,7 @@ export default function SettingsPage() {
           </nav>
 
           <div className="border-t p-3">
-            <div className="flex min-h-16 items-center justify-between gap-3 rounded-xl border bg-background/80 px-3 py-2.5">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{settings.paused ? "Пауза" : "Активен"}</p>
-                <p className="truncate text-xs text-muted-foreground">{settings.hotkey}</p>
-              </div>
-              <StatusIndicator paused={settings.paused} />
-            </div>
+            <DonationCard />
           </div>
         </aside>
 
@@ -286,10 +275,7 @@ export default function SettingsPage() {
               >
                 {settings.paused ? <Play className="size-4" /> : <Pause className="size-4" />}
               </Button>
-              <Button disabled={isRunning} onClick={runNow}>
-                <WandSparkles className="size-4" />
-                {isRunning ? "Обработка" : "Типографировать"}
-              </Button>
+              <StatusIndicator paused={settings.paused} />
             </div>
           </header>
 
@@ -298,7 +284,6 @@ export default function SettingsPage() {
               {activeSection === "system" ? (
                 <SystemSection
                   hotkeyDraft={hotkeyDraft}
-                  isRunning={isRunning}
                   resetSettings={resetSettings}
                   setHotkeyDraft={setHotkeyDraft}
                   settings={settings}
@@ -382,16 +367,64 @@ function StatusIndicator({ paused }: { paused: boolean }) {
   );
 }
 
+async function openDonationUrl(url: (typeof DONATION_URLS)[keyof typeof DONATION_URLS]) {
+  try {
+    const { openUrl } = await import("@tauri-apps/plugin-opener");
+    await openUrl(url);
+  } catch {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+function DonationCard() {
+  return (
+    <div className="rounded-xl border bg-background/80 p-3">
+      <p className="truncate text-sm font-medium">Поддержать разработчика</p>
+      <div className="mt-3 grid gap-2">
+        <DonationLink
+          href={DONATION_URLS.boosty}
+          logo="/brands/boosty.svg"
+          name="Boosty"
+        />
+        <DonationLink
+          href={DONATION_URLS.donationAlerts}
+          logo="/brands/donationalerts.svg"
+          name="DonationAlerts"
+        />
+      </div>
+    </div>
+  );
+}
+
+function DonationLink({
+  href,
+  logo,
+  name
+}: {
+  href: (typeof DONATION_URLS)[keyof typeof DONATION_URLS];
+  logo: string;
+  name: string;
+}) {
+  return (
+    <button
+      aria-label={`Открыть ${name}`}
+      className="flex h-10 items-center justify-center rounded-lg border bg-background px-3 transition-colors hover:bg-muted"
+      type="button"
+      onClick={() => void openDonationUrl(href)}
+    >
+      <img alt={name} className="max-h-5 max-w-[150px]" src={logo} />
+    </button>
+  );
+}
+
 function SystemSection({
   hotkeyDraft,
-  isRunning,
   resetSettings,
   setHotkeyDraft,
   settings,
   patchSettings
 }: {
   hotkeyDraft: string;
-  isRunning: boolean;
   resetSettings: () => void;
   setHotkeyDraft: (value: string) => void;
   settings: SettingsValue;
@@ -526,7 +559,6 @@ function SystemSection({
               <RotateCcw className="size-4" />
               Сбросить настройки
             </Button>
-            <Badge variant="outline">{isRunning ? "Выполняется" : "Готово"}</Badge>
           </div>
         </FieldGroup>
       </PreferencePanel>
