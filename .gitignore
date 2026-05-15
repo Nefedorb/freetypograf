@@ -1,7 +1,6 @@
 .next/
 out/
 node_modules/
-.agents/
 src-tauri/target/
 src-tauri/gen/
 .DS_Store
@@ -9,3 +8,15 @@ src-tauri/gen/
 dist/
 coverage/
 tsconfig.tsbuildinfo
+
+# Project docs / agent instructions
+DESIGN_SYSTEM.md
+Harness_Engineering_Recommendations.md
+agents.md
+task.md
+
+# Tests
+tests/
+
+# Task folder
+task/
