@@ -8,6 +8,7 @@ import {
   Eye,
   Info,
   Keyboard,
+  ListChecks,
   MousePointer2,
   Pause,
   Play,
@@ -104,7 +105,7 @@ type SettingsSection = {
 const SECTIONS: SettingsSection[] = [
   {
     id: "system",
-    title: "Система",
+    title: "Настройки",
     description: "Статус, хоткей, звуки и тема.",
     icon: SlidersHorizontal
   },
@@ -112,7 +113,7 @@ const SECTIONS: SettingsSection[] = [
     id: "languages",
     title: "Профили",
     description: "Строгость правил и формат пробелов.",
-    icon: SlidersHorizontal
+    icon: ListChecks
   },
   {
     id: "rules",
@@ -243,7 +244,7 @@ export default function SettingsPage() {
                   variant="ghost"
                   onClick={() => setActiveSection(section.id)}
                 >
-                  <Icon className="size-4 shrink-0" />
+                  <Icon className="mt-0.5 size-4 shrink-0 self-start" />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate text-sm font-medium">{section.title}</span>
                     <span className="truncate text-xs font-normal text-muted-foreground">
