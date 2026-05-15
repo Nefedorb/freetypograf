@@ -380,14 +380,16 @@ function DonationCard() {
   return (
     <div className="rounded-xl border bg-background/80 p-3">
       <p className="truncate text-sm font-medium">Поддержать разработчика</p>
-      <div className="mt-3 grid gap-2">
+      <div className="mt-2 grid grid-cols-2 gap-2">
         <DonationLink
           href={DONATION_URLS.boosty}
+          imageClassName="max-h-5 max-w-[84px]"
           logo="/brands/boosty.svg"
           name="Boosty"
         />
         <DonationLink
           href={DONATION_URLS.donationAlerts}
+          imageClassName="max-h-4 max-w-[92px]"
           logo="/brands/donationalerts.svg"
           name="DonationAlerts"
         />
@@ -398,21 +400,23 @@ function DonationCard() {
 
 function DonationLink({
   href,
+  imageClassName,
   logo,
   name
 }: {
   href: (typeof DONATION_URLS)[keyof typeof DONATION_URLS];
+  imageClassName: string;
   logo: string;
   name: string;
 }) {
   return (
     <button
       aria-label={`Открыть ${name}`}
-      className="flex h-10 items-center justify-center rounded-lg border bg-background px-3 transition-colors hover:bg-muted"
+      className="flex h-8 items-center justify-center rounded-lg border bg-background px-2 transition-colors hover:bg-muted"
       type="button"
       onClick={() => void openDonationUrl(href)}
     >
-      <img alt={name} className="max-h-5 max-w-[150px]" src={logo} />
+      <img alt={name} className={imageClassName} src={logo} />
     </button>
   );
 }
