@@ -267,6 +267,7 @@ export default function SettingsPage() {
             <div className="flex shrink-0 items-center gap-2">
               <Button
                 aria-label={settings.paused ? "Снять с паузы" : "Поставить на паузу"}
+                className="size-7"
                 size="icon"
                 variant="outline"
                 onClick={() =>
@@ -280,7 +281,7 @@ export default function SettingsPage() {
           </header>
 
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-8 py-7">
+            <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-8 py-6">
               {activeSection === "system" ? (
                 <SystemSection
                   hotkeyDraft={hotkeyDraft}
@@ -336,12 +337,12 @@ function PreferencePanel({
   children: ReactNode;
 }) {
   return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardHeader className="px-5 py-4">
+    <Card className="gap-0 rounded-2xl py-0 shadow-sm">
+      <CardHeader className="gap-1 px-5 pb-1 pt-4">
         <CardTitle className="text-base">{title}</CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}
       </CardHeader>
-      <CardContent className="px-5 pb-5">{children}</CardContent>
+      <CardContent className="px-5 pb-4 pt-3">{children}</CardContent>
     </Card>
   );
 }
