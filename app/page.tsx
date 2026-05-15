@@ -848,18 +848,6 @@ function AboutSection() {
         </div>
       </PreferencePanel>
 
-      <PreferencePanel title="Ссылки" description="Документация правил и источники ядра.">
-        <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline">
-            <a href="https://github.com/typograf/typograf/blob/dev/docs/RULES.ru.md">
-              Правила Typograf
-            </a>
-          </Button>
-          <Button asChild variant="ghost">
-            <a href="https://www.artlebedev.ru/typograf/">ArtLebedev Typograf</a>
-          </Button>
-        </div>
-      </PreferencePanel>
     </>
   );
 }
