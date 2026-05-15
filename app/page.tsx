@@ -145,7 +145,7 @@ const SECTIONS: SettingsSection[] = [
   {
     id: "about",
     title: "О приложении",
-    description: "Приватность, ссылки и ограничения MVP.",
+    description: "Приватность и ограничения MVP.",
     icon: Info
   }
 ];
@@ -153,18 +153,15 @@ const SECTIONS: SettingsSection[] = [
 export default function SettingsPage() {
   const { settings, patchSettings, lastResult } = useSettings();
   const [activeSection, setActiveSection] = useState<SettingsSectionId>("system");
-  const [hotkeyDraft, setHotkeyDraft] = useState(settings.hotkey);
+  const [hotkeyDraft, setHotkeyDraft] = useState<string | null>(null);
   const [previewInput, setPreviewInput] = useState(SAMPLE_TEXT);
 
   const activeSectionMeta = SECTIONS.find((section) => section.id === activeSection) ?? SECTIONS[0];
+  const hotkeyValue = hotkeyDraft ?? settings.hotkey;
   const preview = useMemo(
     () => typographText(previewInput, settings),
     [previewInput, settings]
   );
-
-  useEffect(() => {
-    setHotkeyDraft(settings.hotkey);
-  }, [settings.hotkey]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", settings.theme === "dark");
@@ -284,7 +281,7 @@ export default function SettingsPage() {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-8 py-6">
               {activeSection === "system" ? (
                 <SystemSection
-                  hotkeyDraft={hotkeyDraft}
+                  hotkeyDraft={hotkeyValue}
                   resetSettings={resetSettings}
                   setHotkeyDraft={setHotkeyDraft}
                   settings={settings}
@@ -417,6 +414,7 @@ function DonationLink({
       type="button"
       onClick={() => void openDonationUrl(href)}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt={name} className={imageClassName} src={logo} />
     </button>
   );
@@ -431,7 +429,7 @@ function SystemSection({
 }: {
   hotkeyDraft: string;
   resetSettings: () => void;
-  setHotkeyDraft: (value: string) => void;
+  setHotkeyDraft: (value: string | null) => void;
   settings: SettingsValue;
   patchSettings: SettingsPatch;
 }) {
@@ -467,12 +465,13 @@ function SystemSection({
               <Input
                 className="max-w-sm"
                 value={hotkeyDraft}
-                onBlur={() =>
+                onBlur={() => {
                   patchSettings((current) => ({
                     ...current,
                     hotkey: hotkeyDraft.trim() || current.hotkey
-                  }))
-                }
+                  }));
+                  setHotkeyDraft(null);
+                }}
                 onChange={(event) => setHotkeyDraft(event.target.value)}
               />
               <Button

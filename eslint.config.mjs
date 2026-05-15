@@ -1,3 +1,17 @@
 import nextVitals from "eslint-config-next/core-web-vitals";
 
-export default [...nextVitals];
+const eslintConfig = [
+  {
+    ignores: [
+      ".next/**",
+      "out/**",
+      "node_modules/**",
+      "src-tauri/target/**",
+      "src-tauri/gen/**",
+      "coverage/**"
+    ]
+  },
+  ...nextVitals
+];
+
+export default eslintConfig;

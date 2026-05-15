@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  DEFAULT_SETTINGS,
   readLastResult,
   readSettings,
   type LastResult,
@@ -12,13 +11,10 @@ import {
 } from "@/lib/settings";
 
 export function useSettings() {
-  const [settings, setSettingsState] = useState<TypografSettings>(DEFAULT_SETTINGS);
-  const [lastResult, setLastResultState] = useState<LastResult | null>(null);
+  const [settings, setSettingsState] = useState<TypografSettings>(() => readSettings());
+  const [lastResult, setLastResultState] = useState<LastResult | null>(() => readLastResult());
 
   useEffect(() => {
-    setSettingsState(readSettings());
-    setLastResultState(readLastResult());
-
     const syncSettings = () => setSettingsState(readSettings());
     const syncResult = () => setLastResultState(readLastResult());
 
