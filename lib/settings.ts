@@ -114,12 +114,17 @@ export type CustomReplacementRule = {
   enabled: boolean;
 };
 
+export type BuiltInReplacementSettings = {
+  emailToElectronicMail: boolean;
+};
+
 export type TypografSettings = {
   version: number;
   profile: TypografProfile;
   locale: Array<"ru" | "en-US">;
   enabledCategories: Record<RuleCategoryId, boolean>;
   disabledRules: string[];
+  builtInReplacements: BuiltInReplacementSettings;
   customReplacements: CustomReplacementRule[];
   nbspMode: NbspMode;
   yoMode: YoMode;
@@ -164,6 +169,9 @@ export const DEFAULT_SETTINGS: TypografSettings = {
   locale: ["ru", "en-US"],
   enabledCategories,
   disabledRules: [],
+  builtInReplacements: {
+    emailToElectronicMail: true
+  },
   customReplacements: [],
   nbspMode: "unicode",
   yoMode: "safe",
@@ -197,6 +205,7 @@ export function cloneDefaultSettings(): TypografSettings {
     locale: [...DEFAULT_SETTINGS.locale],
     enabledCategories: { ...DEFAULT_SETTINGS.enabledCategories },
     disabledRules: [...DEFAULT_SETTINGS.disabledRules],
+    builtInReplacements: { ...DEFAULT_SETTINGS.builtInReplacements },
     customReplacements: DEFAULT_SETTINGS.customReplacements.map((rule) => ({ ...rule })),
     floatingButton: { ...DEFAULT_SETTINGS.floatingButton },
     sounds: { ...DEFAULT_SETTINGS.sounds },
@@ -236,6 +245,7 @@ export function normalizeSettings(value: unknown): TypografSettings {
     disabledRules: Array.isArray(incoming.disabledRules)
       ? incoming.disabledRules.filter((rule): rule is string => typeof rule === "string")
       : defaults.disabledRules,
+    builtInReplacements: normalizeBuiltInReplacements(incoming.builtInReplacements),
     customReplacements: normalizeCustomReplacements(incoming.customReplacements),
     nbspMode,
     yoMode,
@@ -323,6 +333,20 @@ function isProfile(value: unknown): value is TypografProfile {
 
 function isTheme(value: unknown): value is AppTheme {
   return value === "system" || value === "light" || value === "dark";
+}
+
+function normalizeBuiltInReplacements(value: unknown): BuiltInReplacementSettings {
+  const defaults = cloneDefaultSettings().builtInReplacements;
+  if (!isRecord(value)) {
+    return defaults;
+  }
+
+  return {
+    emailToElectronicMail:
+      typeof value.emailToElectronicMail === "boolean"
+        ? value.emailToElectronicMail
+        : defaults.emailToElectronicMail
+  };
 }
 
 function normalizeCustomReplacements(value: unknown): CustomReplacementRule[] {

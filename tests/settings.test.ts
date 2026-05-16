@@ -74,6 +74,25 @@ describe("settings schema", () => {
     expect(settings.customReplacements).toEqual([]);
   });
 
+  it("мигрирует старые настройки со включенными встроенными заменами", () => {
+    const settings = normalizeSettings({
+      version: 0,
+      profile: "default"
+    });
+
+    expect(settings.builtInReplacements.emailToElectronicMail).toBe(true);
+  });
+
+  it("сохраняет выключенную встроенную замену email", () => {
+    const settings = normalizeSettings({
+      builtInReplacements: {
+        emailToElectronicMail: false
+      }
+    });
+
+    expect(settings.builtInReplacements.emailToElectronicMail).toBe(false);
+  });
+
   it("нормализует пользовательские правила и удаляет пустой from", () => {
     const settings = normalizeSettings({
       customReplacements: [

@@ -80,6 +80,16 @@ describe("typograf rules", () => {
     );
   });
 
+  it("не заменяет email/e-mail, если встроенное правило выключено", () => {
+    const settings = cloneDefaultSettings();
+    settings.builtInReplacements.emailToElectronicMail = false;
+
+    const output = typographText("email и e-mail.", settings).output;
+
+    expect(output).toContain("email");
+    expect(output).toContain("e-mail");
+  });
+
   it("не ломает настоящие email-адреса и домены", () => {
     const output = run("Пишите на test@example.com или смотрите email.com.");
 

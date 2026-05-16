@@ -791,6 +791,34 @@ function RulesSection({
       </PreferencePanel>
 
       <PreferencePanel
+        title="Встроенные замены"
+        description="Готовые безопасные замены поверх правил Typograf."
+      >
+        <FieldGroup className="gap-3">
+          <Field orientation="horizontal">
+            <Switch
+              checked={settings.builtInReplacements.emailToElectronicMail}
+              onCheckedChange={(emailToElectronicMail) =>
+                patchSettings((current) => ({
+                  ...current,
+                  builtInReplacements: {
+                    ...current.builtInReplacements,
+                    emailToElectronicMail
+                  }
+                }))
+              }
+            />
+            <FieldContent>
+              <FieldTitle>Заменять e-mail на «электронная почта»</FieldTitle>
+              <FieldDescription>
+                Учитывает email, e-mail и разные регистры, но не трогает настоящие адреса.
+              </FieldDescription>
+            </FieldContent>
+          </Field>
+        </FieldGroup>
+      </PreferencePanel>
+
+      <PreferencePanel
         title="Свои правила"
         description="Правила применяются как обычный текст, без регулярных выражений."
       >

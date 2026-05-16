@@ -110,7 +110,9 @@ export function typographText(input: string, settings: TypografSettings): Typogr
     output = output.replace(/\u00a0/g, "&nbsp;").replace(/\u202f/g, "&#8239;");
   }
 
-  output = applyBuiltInReplacementRules(output);
+  if (settings.builtInReplacements.emailToElectronicMail) {
+    output = applyBuiltInReplacementRules(output);
+  }
   output = applyCustomReplacementRules(output, settings);
 
   return {
