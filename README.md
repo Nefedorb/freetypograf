@@ -19,9 +19,13 @@ FreeTypograf помогает быстро привести выделенный
 
 ## Скриншоты
 
-| Профили | Правила | Результаты |
+| Настройки | Профили | Правила |
 | --- | --- | --- |
-| ![Профили](docs/assets/screenshots/settings-profiles.png) | ![Правила](docs/assets/screenshots/settings-rules.png) | ![Результаты](docs/assets/screenshots/settings-results.png) |
+| ![Настройки](docs/assets/screenshots/settings-overview.png) | ![Профили](docs/assets/screenshots/settings-profiles.png) | ![Правила](docs/assets/screenshots/settings-rules.png) |
+
+| Проверка | О приложении |
+| --- | --- |
+| ![Проверка](docs/assets/screenshots/settings-preview-dark.png) | ![О приложении](docs/assets/screenshots/settings-about-dark.png) |
 
 ## Windows
 
