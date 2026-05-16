@@ -1,5 +1,24 @@
 # Build Log
 
+## 2026-05-16 Modern Minimal brand theme
+
+Settings UI theme updated to the `Modern Minimal + Brand Green` design proven in the local design lab:
+
+- `app/globals.css` now uses the cleaned Modern Minimal token set;
+- brand accents remain green via `#129D5C` for primary, ring, sidebar primary, and chart tokens;
+- blue accent/tint states were replaced with green tint states;
+- floating-window transparency CSS was preserved;
+- README screenshots were intentionally left unchanged and will be refreshed in a separate pass.
+
+Checks:
+
+- `pnpm typecheck` - success;
+- `pnpm test` - success, 37 tests;
+- `pnpm exec eslint .` - success;
+- `pnpm build` - success;
+- `cargo check --manifest-path src-tauri/Cargo.toml` - success;
+- `pnpm tauri build` - success, Windows installers rebuilt locally.
+
 ## 2026-05-16 FreeTypograf 1.0.0 release
 
 Опубликован первый публичный GitHub Release `v1.0.0` в репозитории `Nefedorb/freetypograf`:
