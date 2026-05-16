@@ -4,39 +4,10 @@ export type ResultSoundStatus = "success" | "no-changes" | "no-selection" | "err
 
 type SoundName = "tink" | "pop" | "purr";
 
-type SoundPreset = {
-  frequency: number;
-  endFrequency: number;
-  duration: number;
-  type: OscillatorType;
-};
-
-const SOUND_PRESETS: Record<SoundName, SoundPreset> = {
-  tink: {
-    frequency: 880,
-    endFrequency: 1320,
-    duration: 0.12,
-    type: "sine"
-  },
-  pop: {
-    frequency: 260,
-    endFrequency: 180,
-    duration: 0.1,
-    type: "triangle"
-  },
-  purr: {
-    frequency: 130,
-    endFrequency: 90,
-    duration: 0.16,
-    type: "sawtooth"
-  }
-};
-
-const MAX_GAIN = 0.45;
-
-type BrowserWindowWithAudio = Window & {
-  AudioContext?: typeof AudioContext;
-  webkitAudioContext?: typeof AudioContext;
+const SOUND_URLS: Record<SoundName, string> = {
+  tink: "/sounds/success.mp3",
+  pop: "/sounds/no-changes.mp3",
+  purr: "/sounds/error.wav"
 };
 
 export function playResultSound(settings: SoundSettings, status: ResultSoundStatus) {
@@ -45,41 +16,14 @@ export function playResultSound(settings: SoundSettings, status: ResultSoundStat
     return false;
   }
 
-  const AudioContextConstructor = getAudioContextConstructor();
-  if (!AudioContextConstructor) {
+  if (typeof Audio === "undefined") {
     return false;
   }
 
   try {
-    const preset = SOUND_PRESETS[soundName];
-    const context = new AudioContextConstructor();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    const now = context.currentTime;
-    const level =
-      Math.round((Math.min(Math.max(settings.volume, 0), 10) / 10) * MAX_GAIN * 1000) /
-      1000;
-
-    oscillator.type = preset.type;
-    oscillator.frequency.setValueAtTime(preset.frequency, now);
-    oscillator.frequency.exponentialRampToValueAtTime(preset.endFrequency, now + preset.duration);
-
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(level, now + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + preset.duration);
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(now);
-    oscillator.stop(now + preset.duration + 0.03);
-    oscillator.addEventListener("ended", () => {
-      void context.close();
-    });
-
-    if (context.state === "suspended") {
-      void context.resume().catch(() => undefined);
-    }
-
+    const audio = new Audio(SOUND_URLS[soundName]);
+    audio.volume = Math.min(Math.max(settings.volume, 0), 10) / 10;
+    void audio.play().catch(() => undefined);
     return true;
   } catch {
     return false;
@@ -100,13 +44,4 @@ export function getResultSoundName(settings: SoundSettings, status: ResultSoundS
   }
 
   return null;
-}
-
-function getAudioContextConstructor() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const audioWindow = window as BrowserWindowWithAudio;
-  return audioWindow.AudioContext ?? audioWindow.webkitAudioContext ?? null;
 }
