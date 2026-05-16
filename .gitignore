@@ -3,11 +3,32 @@ out/
 node_modules/
 src-tauri/target/
 src-tauri/gen/
-.DS_Store
-*.log
 dist/
 coverage/
 tsconfig.tsbuildinfo
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Tool caches / reports
+*.log
+.eslintcache
+.turbo/
+.vercel/
+.pnpm-store/
+test-results/
+playwright-report/
+blob-report/
 
 # Project docs / agent instructions
 DESIGN_SYSTEM.md
@@ -23,3 +44,6 @@ screens/
 
 # Local sound staging
 sound/
+
+# Local agent workspace
+.agents/
