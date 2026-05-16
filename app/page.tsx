@@ -787,35 +787,34 @@ function RulesSection({
               </span>
             </label>
           ))}
-        </div>
-      </PreferencePanel>
-
-      <PreferencePanel
-        title="Встроенные замены"
-        description="Готовые безопасные замены поверх правил Typograf."
-      >
-        <FieldGroup className="gap-3">
-          <Field orientation="horizontal">
-            <Switch
+          <label
+            className={cn(
+              "flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors",
+              settings.builtInReplacements.emailToElectronicMail
+                ? "bg-background"
+                : "bg-muted/60"
+            )}
+          >
+            <Checkbox
               checked={settings.builtInReplacements.emailToElectronicMail}
-              onCheckedChange={(emailToElectronicMail) =>
+              onCheckedChange={(checked) =>
                 patchSettings((current) => ({
                   ...current,
                   builtInReplacements: {
                     ...current.builtInReplacements,
-                    emailToElectronicMail
+                    emailToElectronicMail: checked === true
                   }
                 }))
               }
             />
-            <FieldContent>
-              <FieldTitle>Заменять e-mail на «электронная почта»</FieldTitle>
-              <FieldDescription>
-                Учитывает email, e-mail и разные регистры, но не трогает настоящие адреса.
-              </FieldDescription>
-            </FieldContent>
-          </Field>
-        </FieldGroup>
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="text-sm font-medium">E-mail → электронная почта</span>
+              <span className="text-xs leading-5 text-muted-foreground">
+                Не трогает настоящие адреса.
+              </span>
+            </span>
+          </label>
+        </div>
       </PreferencePanel>
 
       <PreferencePanel
