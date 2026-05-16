@@ -107,12 +107,20 @@ export type PrivacySettings = {
   rememberLastResult: boolean;
 };
 
+export type CustomReplacementRule = {
+  id: string;
+  from: string;
+  to: string;
+  enabled: boolean;
+};
+
 export type TypografSettings = {
   version: number;
   profile: TypografProfile;
   locale: Array<"ru" | "en-US">;
   enabledCategories: Record<RuleCategoryId, boolean>;
   disabledRules: string[];
+  customReplacements: CustomReplacementRule[];
   nbspMode: NbspMode;
   yoMode: YoMode;
   hotkey: string;
@@ -133,6 +141,8 @@ export type LastResult = {
 
 export const STORAGE_KEY = "typograf.settings.v1";
 export const LAST_RESULT_KEY = "typograf.last-result.v1";
+export const MAX_CUSTOM_REPLACEMENTS = 30;
+export const MAX_CUSTOM_REPLACEMENT_LENGTH = 200;
 
 const enabledCategories: Record<RuleCategoryId, boolean> = {
   quotes: true,
@@ -154,6 +164,7 @@ export const DEFAULT_SETTINGS: TypografSettings = {
   locale: ["ru", "en-US"],
   enabledCategories,
   disabledRules: [],
+  customReplacements: [],
   nbspMode: "unicode",
   yoMode: "safe",
   hotkey: "CommandOrControl+Shift+T",
@@ -186,6 +197,7 @@ export function cloneDefaultSettings(): TypografSettings {
     locale: [...DEFAULT_SETTINGS.locale],
     enabledCategories: { ...DEFAULT_SETTINGS.enabledCategories },
     disabledRules: [...DEFAULT_SETTINGS.disabledRules],
+    customReplacements: DEFAULT_SETTINGS.customReplacements.map((rule) => ({ ...rule })),
     floatingButton: { ...DEFAULT_SETTINGS.floatingButton },
     sounds: { ...DEFAULT_SETTINGS.sounds },
     privacy: { ...DEFAULT_SETTINGS.privacy }
@@ -224,6 +236,7 @@ export function normalizeSettings(value: unknown): TypografSettings {
     disabledRules: Array.isArray(incoming.disabledRules)
       ? incoming.disabledRules.filter((rule): rule is string => typeof rule === "string")
       : defaults.disabledRules,
+    customReplacements: normalizeCustomReplacements(incoming.customReplacements),
     nbspMode,
     yoMode,
     hotkey: typeof incoming.hotkey === "string" && incoming.hotkey.trim()
@@ -310,6 +323,50 @@ function isProfile(value: unknown): value is TypografProfile {
 
 function isTheme(value: unknown): value is AppTheme {
   return value === "system" || value === "light" || value === "dark";
+}
+
+function normalizeCustomReplacements(value: unknown): CustomReplacementRule[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const rules: CustomReplacementRule[] = [];
+
+  for (const item of value) {
+    if (!isRecord(item) || rules.length >= MAX_CUSTOM_REPLACEMENTS) {
+      continue;
+    }
+
+    const from = normalizeReplacementText(item.from);
+    if (!from) {
+      continue;
+    }
+
+    rules.push({
+      id: normalizeReplacementId(item.id, rules.length),
+      from,
+      to: normalizeReplacementText(item.to),
+      enabled: item.enabled !== false
+    });
+  }
+
+  return rules;
+}
+
+function normalizeReplacementText(value: unknown) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim().slice(0, MAX_CUSTOM_REPLACEMENT_LENGTH);
+}
+
+function normalizeReplacementId(value: unknown, index: number) {
+  if (typeof value === "string" && value.trim()) {
+    return value.trim().slice(0, 80);
+  }
+
+  return `custom-${index + 1}`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

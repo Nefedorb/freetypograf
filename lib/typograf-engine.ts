@@ -110,6 +110,9 @@ export function typographText(input: string, settings: TypografSettings): Typogr
     output = output.replace(/\u00a0/g, "&nbsp;").replace(/\u202f/g, "&#8239;");
   }
 
+  output = applyBuiltInReplacementRules(output);
+  output = applyCustomReplacementRules(output, settings);
+
   return {
     input,
     output,
@@ -128,6 +131,23 @@ function applySafeCurrencyRules(output: string, settings: TypografSettings) {
     /(^|[^\d])(\d[\d \u00a0\u202f.,]*\d|\d)[ \u00a0\u202f]+(руб|р)\.(?=$|[\s,;:!?])/giu,
     "$1$2\u00a0₽"
   );
+}
+
+function applyBuiltInReplacementRules(output: string) {
+  return output.replace(
+    /(^|[^\p{L}\p{N}_@./:-])(e-mail|email)(?![\p{L}\p{N}_@-]|\.\p{L})/giu,
+    "$1электронная почта"
+  );
+}
+
+function applyCustomReplacementRules(output: string, settings: TypografSettings) {
+  return settings.customReplacements.reduce((current, rule) => {
+    if (!rule.enabled || !rule.from) {
+      return current;
+    }
+
+    return current.split(rule.from).join(rule.to);
+  }, output);
 }
 
 export function buildStats(input: string, output: string): TypografStats {

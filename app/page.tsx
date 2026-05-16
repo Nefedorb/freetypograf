@@ -12,9 +12,11 @@ import {
   MousePointer2,
   Pause,
   Play,
+  Plus,
   RotateCcw,
   ShieldCheck,
   SlidersHorizontal,
+  Trash2,
   Type,
   type LucideIcon
 } from "lucide-react";
@@ -58,7 +60,10 @@ import {
 } from "@/lib/desktop";
 import {
   cloneDefaultSettings,
+  MAX_CUSTOM_REPLACEMENT_LENGTH,
+  MAX_CUSTOM_REPLACEMENTS,
   RULE_CATEGORIES,
+  type CustomReplacementRule,
   type RuleCategoryId,
   type TypografProfile
 } from "@/lib/settings";
@@ -292,7 +297,11 @@ export default function SettingsPage() {
                 <LanguagesSection settings={settings} patchSettings={patchSettings} />
               ) : null}
               {activeSection === "rules" ? (
-                <RulesSection settings={settings} updateCategory={updateCategory} />
+                <RulesSection
+                  settings={settings}
+                  patchSettings={patchSettings}
+                  updateCategory={updateCategory}
+                />
               ) : null}
               {activeSection === "button" ? (
                 <ButtonSection settings={settings} patchSettings={patchSettings} />
@@ -648,41 +657,251 @@ function LanguagesSection({
 }
 
 function RulesSection({
+  patchSettings,
   settings,
   updateCategory
 }: {
+  patchSettings: SettingsPatch;
   settings: SettingsValue;
   updateCategory: (id: RuleCategoryId, value: boolean) => void;
 }) {
+  const [replacementDrafts, setReplacementDrafts] = useState<
+    Record<string, Pick<CustomReplacementRule, "from" | "to">>
+  >({});
+  const [newReplacement, setNewReplacement] = useState({ from: "", to: "" });
+
+  const updateReplacementDraft = (
+    id: string,
+    patch: Partial<Pick<CustomReplacementRule, "from" | "to">>
+  ) => {
+    setReplacementDrafts((current) => {
+      const rule = settings.customReplacements.find((item) => item.id === id);
+      const previous = current[id] ?? {
+        from: rule?.from ?? "",
+        to: rule?.to ?? ""
+      };
+
+      return {
+        ...current,
+        [id]: {
+          ...previous,
+          ...patch
+        }
+      };
+    });
+  };
+
+  const commitReplacementDraft = (rule: CustomReplacementRule) => {
+    const draft = replacementDrafts[rule.id];
+    if (!draft) {
+      return;
+    }
+
+    const from = draft.from.trim();
+    const to = draft.to.trim();
+
+    setReplacementDrafts((current) => {
+      const next = { ...current };
+      delete next[rule.id];
+      return next;
+    });
+
+    patchSettings((current) => ({
+      ...current,
+      customReplacements: from
+        ? current.customReplacements.map((item) =>
+            item.id === rule.id ? { ...item, from, to } : item
+          )
+        : current.customReplacements.filter((item) => item.id !== rule.id)
+    }));
+  };
+
+  const updateCustomReplacement = (id: string, patch: Partial<CustomReplacementRule>) => {
+    patchSettings((current) => ({
+      ...current,
+      customReplacements: current.customReplacements.map((rule) =>
+        rule.id === id ? { ...rule, ...patch } : rule
+      )
+    }));
+  };
+
+  const removeCustomReplacement = (id: string) => {
+    setReplacementDrafts((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+    patchSettings((current) => ({
+      ...current,
+      customReplacements: current.customReplacements.filter((rule) => rule.id !== id)
+    }));
+  };
+
+  const addCustomReplacement = () => {
+    const from = newReplacement.from.trim();
+    const to = newReplacement.to.trim();
+
+    if (!from || settings.customReplacements.length >= MAX_CUSTOM_REPLACEMENTS) {
+      return;
+    }
+
+    patchSettings((current) => ({
+      ...current,
+      customReplacements: [
+        ...current.customReplacements,
+        {
+          id: createCustomReplacementId(),
+          from,
+          to,
+          enabled: true
+        }
+      ]
+    }));
+    setNewReplacement({ from: "", to: "" });
+  };
+
   return (
-    <PreferencePanel
-      title="Категории правил"
-      description="Отключение категории добавляет связанные правила Typograf в disable-list."
-    >
-      <div className="grid gap-3 md:grid-cols-2">
-        {RULE_CATEGORIES.map((category) => (
-          <label
-            key={category.id}
-            className={cn(
-              "flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors",
-              settings.enabledCategories[category.id] ? "bg-background" : "bg-muted/60"
-            )}
-          >
-            <Checkbox
-              checked={settings.enabledCategories[category.id]}
-              onCheckedChange={(checked) => updateCategory(category.id, checked === true)}
-            />
-            <span className="flex min-w-0 flex-col gap-1">
-              <span className="text-sm font-medium">{category.title}</span>
-              <span className="text-xs leading-5 text-muted-foreground">
-                {category.description}
+    <>
+      <PreferencePanel
+        title="Категории правил"
+        description="Отключение категории добавляет связанные правила Typograf в disable-list."
+      >
+        <div className="grid gap-3 md:grid-cols-2">
+          {RULE_CATEGORIES.map((category) => (
+            <label
+              key={category.id}
+              className={cn(
+                "flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors",
+                settings.enabledCategories[category.id] ? "bg-background" : "bg-muted/60"
+              )}
+            >
+              <Checkbox
+                checked={settings.enabledCategories[category.id]}
+                onCheckedChange={(checked) => updateCategory(category.id, checked === true)}
+              />
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="text-sm font-medium">{category.title}</span>
+                <span className="text-xs leading-5 text-muted-foreground">
+                  {category.description}
+                </span>
               </span>
-            </span>
-          </label>
-        ))}
-      </div>
-    </PreferencePanel>
+            </label>
+          ))}
+        </div>
+      </PreferencePanel>
+
+      <PreferencePanel
+        title="Свои правила"
+        description="Правила применяются как обычный текст, без регулярных выражений."
+      >
+        <FieldGroup className="gap-3">
+          {settings.customReplacements.map((rule) => {
+            const draft = replacementDrafts[rule.id];
+            const from = draft?.from ?? rule.from;
+            const to = draft?.to ?? rule.to;
+
+            return (
+              <Field key={rule.id} className="rounded-xl border p-3">
+                <div className="flex items-start gap-3">
+                  <Switch
+                    aria-label="Включить правило"
+                    checked={rule.enabled}
+                    onCheckedChange={(enabled) =>
+                      updateCustomReplacement(rule.id, { enabled })
+                    }
+                  />
+                  <div className="grid min-w-0 flex-1 gap-2 md:grid-cols-2">
+                    <Input
+                      aria-label="Что меняем"
+                      maxLength={MAX_CUSTOM_REPLACEMENT_LENGTH}
+                      placeholder="Что меняем"
+                      value={from}
+                      onBlur={() => commitReplacementDraft(rule)}
+                      onChange={(event) =>
+                        updateReplacementDraft(rule.id, { from: event.target.value })
+                      }
+                    />
+                    <Input
+                      aria-label="На что меняем"
+                      maxLength={MAX_CUSTOM_REPLACEMENT_LENGTH}
+                      placeholder="На что меняем"
+                      value={to}
+                      onBlur={() => commitReplacementDraft(rule)}
+                      onChange={(event) =>
+                        updateReplacementDraft(rule.id, { to: event.target.value })
+                      }
+                    />
+                  </div>
+                  <Button
+                    aria-label="Удалить правило"
+                    className="shrink-0"
+                    size="icon"
+                    type="button"
+                    variant="outline"
+                    onClick={() => removeCustomReplacement(rule.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </Field>
+            );
+          })}
+
+          <Field className="rounded-xl border border-dashed p-3">
+            <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto]">
+              <Input
+                maxLength={MAX_CUSTOM_REPLACEMENT_LENGTH}
+                placeholder="Что меняем"
+                value={newReplacement.from}
+                onChange={(event) =>
+                  setNewReplacement((current) => ({
+                    ...current,
+                    from: event.target.value
+                  }))
+                }
+              />
+              <Input
+                maxLength={MAX_CUSTOM_REPLACEMENT_LENGTH}
+                placeholder="На что меняем"
+                value={newReplacement.to}
+                onChange={(event) =>
+                  setNewReplacement((current) => ({
+                    ...current,
+                    to: event.target.value
+                  }))
+                }
+              />
+              <Button
+                type="button"
+                variant="outline"
+                disabled={
+                  !newReplacement.from.trim() ||
+                  settings.customReplacements.length >= MAX_CUSTOM_REPLACEMENTS
+                }
+                onClick={addCustomReplacement}
+              >
+                <Plus className="size-4" />
+                Добавить правило
+              </Button>
+            </div>
+            {settings.customReplacements.length >= MAX_CUSTOM_REPLACEMENTS ? (
+              <FieldDescription>
+                Достигнут лимит: {MAX_CUSTOM_REPLACEMENTS} правил.
+              </FieldDescription>
+            ) : null}
+          </Field>
+        </FieldGroup>
+      </PreferencePanel>
+    </>
   );
+}
+
+function createCustomReplacementId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `custom-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 function ButtonSection({

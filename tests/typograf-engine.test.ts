@@ -71,4 +71,73 @@ describe("typograf rules", () => {
 
     expect(output).toContain("А.&nbsp;С.&nbsp;Пушкин");
   });
+
+  it("заменяет standalone email/e-mail на электронную почту в разных регистрах", () => {
+    const output = run("email, e-mail, E-mail, E-Mail и EMAIL.");
+
+    expect(output.replace(/\u00a0/g, " ")).toBe(
+      "электронная почта, электронная почта, электронная почта, электронная почта и электронная почта."
+    );
+  });
+
+  it("не ломает настоящие email-адреса и домены", () => {
+    const output = run("Пишите на test@example.com или смотрите email.com.");
+
+    expect(output).toContain("test@example.com");
+    expect(output).toContain("email.com");
+  });
+
+  it("применяет пользовательское правило literal-only", () => {
+    const settings = cloneDefaultSettings();
+    settings.customReplacements = [
+      {
+        id: "surname",
+        from: "Ивановв",
+        to: "Иванов",
+        enabled: true
+      }
+    ];
+
+    const output = typographText("Документ подписал Ивановв.", settings).output;
+
+    expect(output).toContain("Иванов.");
+  });
+
+  it("не применяет выключенное пользовательское правило", () => {
+    const settings = cloneDefaultSettings();
+    settings.customReplacements = [
+      {
+        id: "disabled",
+        from: "Ивановв",
+        to: "Иванов",
+        enabled: false
+      }
+    ];
+
+    const output = typographText("Документ подписал Ивановв.", settings).output;
+
+    expect(output).toContain("Ивановв");
+  });
+
+  it("сохраняет порядок пользовательских правил сверху вниз", () => {
+    const settings = cloneDefaultSettings();
+    settings.customReplacements = [
+      {
+        id: "first",
+        from: "А",
+        to: "Б",
+        enabled: true
+      },
+      {
+        id: "second",
+        from: "Б",
+        to: "В",
+        enabled: true
+      }
+    ];
+
+    const output = typographText("А", settings).output;
+
+    expect(output).toBe("В");
+  });
 });

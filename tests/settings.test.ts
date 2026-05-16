@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   cloneDefaultSettings,
   DEFAULT_SETTINGS,
+  MAX_CUSTOM_REPLACEMENTS,
   normalizeSettings,
   readSettings,
   SETTINGS_VERSION,
@@ -62,5 +63,67 @@ describe("settings schema", () => {
 
     expect(window.localStorage.getItem(STORAGE_KEY)).toContain("minimal");
     expect(readSettings().profile).toBe("minimal");
+  });
+
+  it("мигрирует старые настройки без пользовательских правил", () => {
+    const settings = normalizeSettings({
+      version: 0,
+      profile: "default"
+    });
+
+    expect(settings.customReplacements).toEqual([]);
+  });
+
+  it("нормализует пользовательские правила и удаляет пустой from", () => {
+    const settings = normalizeSettings({
+      customReplacements: [
+        {
+          id: "valid",
+          from: "  Ивановв  ",
+          to: "  Иванов  ",
+          enabled: true
+        },
+        {
+          id: "empty",
+          from: "   ",
+          to: "x",
+          enabled: true
+        },
+        {
+          id: 123,
+          from: "email",
+          to: 456,
+          enabled: "yes"
+        }
+      ]
+    });
+
+    expect(settings.customReplacements).toEqual([
+      {
+        id: "valid",
+        from: "Ивановв",
+        to: "Иванов",
+        enabled: true
+      },
+      {
+        id: "custom-2",
+        from: "email",
+        to: "",
+        enabled: true
+      }
+    ]);
+  });
+
+  it("ограничивает количество пользовательских правил", () => {
+    const settings = normalizeSettings({
+      customReplacements: Array.from({ length: MAX_CUSTOM_REPLACEMENTS + 5 }, (_, index) => ({
+        id: `rule-${index}`,
+        from: `from-${index}`,
+        to: `to-${index}`,
+        enabled: true
+      }))
+    });
+
+    expect(settings.customReplacements).toHaveLength(MAX_CUSTOM_REPLACEMENTS);
   });
 });
