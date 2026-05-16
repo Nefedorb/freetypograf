@@ -1,5 +1,32 @@
 # Build Log
 
+## 2026-05-16 FreeTypograf 1.0.0 release
+
+Опубликован первый публичный GitHub Release `v1.0.0` в репозитории `Nefedorb/freetypograf`:
+
+- версии обновлены до `1.0.0` в `package.json`, `src-tauri/tauri.conf.json` и `src-tauri/Cargo.toml`;
+- release workflow больше не прикрепляет raw portable `app.exe` к публичным Releases;
+- Windows Release assets: `FreeTypograf_1.0.0_x64-setup.exe` и `FreeTypograf_1.0.0_x64_en-US.msi`;
+- macOS Release asset: `FreeTypograf_1.0.0_aarch64.dmg`;
+- GitHub автоматически добавляет `Source code (zip)` и `Source code (tar.gz)`;
+- README screenshots обновлены из локальной staging-папки `screens/`, финальные копии лежат в `docs/assets/screenshots/`;
+- локальные staging-папки `screens/` и `sound/` добавлены в `.gitignore`.
+
+Проверки перед релизом:
+
+- `pnpm typecheck` - успешно;
+- `pnpm test` - успешно, 37 тестов;
+- `pnpm exec eslint .` - успешно;
+- `pnpm build` - успешно;
+- `cargo check --manifest-path src-tauri/Cargo.toml` - успешно;
+- `pnpm tauri build` - успешно, собраны Windows installers `1.0.0`.
+
+GitHub Actions:
+
+- `Build Windows` - успешно;
+- `Build macOS` - успешно;
+- `Release` - успешно, опубликован `https://github.com/Nefedorb/freetypograf/releases/tag/v1.0.0`.
+
 ## 2026-05-15 MVP desktop scaffold
 
 Собран MVP Windows-приложения "Типограф":

@@ -10,30 +10,34 @@
 - `docs/ARCHITECTURE.md` - архитектура приложения.
 - `docs/MACOS.md` - заметки по macOS runtime и Accessibility-разрешениям.
 - `docs/WINDOWS_TESTING.md` - чеклист Windows-тестирования.
+- `docs/MACOS_TESTING.md` - чеклист macOS-тестирования.
 - `docs/RELEASE_PROCESS.md` - процесс публикации GitHub Releases.
 - `docs/GITHUB_DISTRIBUTION_PLAN.md` - roadmap единого GitHub-репозитория.
 
 ## Материалы задачи
 
-- `task/task.txt` - исходное описание desktop-типографа.
-- `task/Telegram_alKfjuGRv7.png` - пример окна настроек.
-- `task/Telegram_jJu0V2Nezt.png` - пример floating-кнопки в редакторе.
-- `task/Telegram_sGJULbmsSL.png` - пример результата типографирования.
+- `task/` - локальные рабочие материалы исходного MVP, папка игнорируется git.
+- `screens/` - локальная staging-папка для новых скриншотов README, папка игнорируется git.
+- `sound/` - локальная staging-папка исходных звуков, папка игнорируется git.
 
 ## Основные рабочие области
 
 - `package.json`, `pnpm-lock.yaml` - зависимости и команды проекта.
-- `.agents/skills/shadcn/` - установленный shadcn/ui skill, использованный для UI.
-- `next.config.ts`, `tsconfig.json`, `vitest.config.ts` - сборка, типизация и тесты.
+- `.github/workflows/` - GitHub Actions для Windows, macOS и Release.
 - `app/` - Next.js UI.
 - `components/` - UI-компоненты.
 - `hooks/` - React hooks для настроек.
-- `lib/` - настройки, типографический движок, helpers.
+- `lib/` - настройки, типографический движок, clipboard-flow helpers и звуки.
+- `public/sounds/` - рабочие звуковые assets, которые попадают в сборку.
+- `docs/assets/screenshots/` - финальные скриншоты для GitHub README.
 - `src-tauri/` - Tauri runtime и desktop-интеграции.
 - `tests/` - unit/smoke тесты.
 
 ## Сборочные артефакты
 
-- `out/` - статический экспорт Next.js.
-- Windows `.msi`/`setup.exe` собираются через GitHub Actions на Windows runner.
-- macOS `.app`/`.dmg` собираются через GitHub Actions на macOS runner.
+- `out/` - статический экспорт Next.js, не коммитится.
+- `src-tauri/target/` - Rust/Tauri build output, не коммитится.
+- `src-tauri/target/release/app.exe` - локальный Windows executable для ручной проверки после `pnpm tauri build`.
+- GitHub Actions `Build Windows` может публиковать portable `app.exe` как test artifact.
+- GitHub Release не должен публиковать `app.exe`; для Windows пользователям отдаются только `setup.exe` и `.msi`.
+- macOS `.dmg` собирается через GitHub Actions на macOS runner.

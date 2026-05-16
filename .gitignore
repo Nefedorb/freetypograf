@@ -20,3 +20,6 @@ task/
 
 # Local screenshot staging
 screens/
+
+# Local sound staging
+sound/
