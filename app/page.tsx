@@ -376,7 +376,7 @@ async function openDonationUrl(url: (typeof DONATION_URLS)[keyof typeof DONATION
 
 function DonationCard() {
   return (
-    <div className="rounded-xl border bg-background/80 p-3">
+    <div className="px-1">
       <p className="truncate text-sm font-medium">Поддержать разработчика</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <DonationLink
