@@ -1,4 +1,4 @@
-export const SETTINGS_VERSION = 1;
+export const SETTINGS_VERSION = 2;
 
 export type TypografProfile = "default" | "strict" | "minimal";
 export type NbspMode = "unicode" | "html";
@@ -235,6 +235,15 @@ export function normalizeSettings(value: unknown): TypografSettings {
   const nbspMode = incoming.nbspMode === "html" ? "html" : defaults.nbspMode;
   const yoMode = incoming.yoMode === "off" ? "off" : defaults.yoMode;
   const theme = isTheme(incoming.theme) ? incoming.theme : defaults.theme;
+  const incomingVersion = typeof incoming.version === "number" ? incoming.version : 0;
+  const sounds = {
+    ...defaults.sounds,
+    ...(isRecord(incoming.sounds) ? incoming.sounds : {})
+  };
+
+  if (incomingVersion < 2) {
+    sounds.enabled = false;
+  }
 
   return {
     ...defaults,
@@ -258,10 +267,7 @@ export function normalizeSettings(value: unknown): TypografSettings {
       ...defaults.floatingButton,
       ...(isRecord(incoming.floatingButton) ? incoming.floatingButton : {})
     },
-    sounds: {
-      ...defaults.sounds,
-      ...(isRecord(incoming.sounds) ? incoming.sounds : {})
-    },
+    sounds,
     privacy: {
       ...defaults.privacy,
       ...(isRecord(incoming.privacy) ? incoming.privacy : {}),

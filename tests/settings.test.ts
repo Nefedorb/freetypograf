@@ -94,8 +94,28 @@ describe("settings schema", () => {
     expect(settings.builtInReplacements.emailToElectronicMail).toBe(false);
   });
 
-  it("сохраняет пользовательский выбор включенных звуков", () => {
+  it("выключает звуки при миграции старых настроек", () => {
     const settings = normalizeSettings({
+      version: 1,
+      sounds: {
+        enabled: true,
+        volume: 10,
+        success: "tink",
+        noChanges: "pop",
+        error: "purr"
+      }
+    });
+
+    expect(settings.sounds.enabled).toBe(false);
+    expect(settings.sounds.volume).toBe(10);
+    expect(settings.sounds.success).toBe("tink");
+    expect(settings.sounds.noChanges).toBe("pop");
+    expect(settings.sounds.error).toBe("purr");
+  });
+
+  it("сохраняет пользовательский выбор включенных звуков в актуальной версии", () => {
+    const settings = normalizeSettings({
+      version: SETTINGS_VERSION,
       sounds: {
         enabled: true
       }
