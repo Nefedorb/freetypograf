@@ -12,6 +12,7 @@ import {
   setFloatingPosition,
   showSettingsWindow
 } from "@/lib/desktop";
+import { playResultSound } from "@/lib/sounds";
 import { useSettings } from "@/hooks/use-settings";
 
 type DragState = {
@@ -52,6 +53,7 @@ export default function FloatingButtonPage() {
 
     setBusy(true);
     const result = await runClipboardTypograf(settings);
+    playResultSound(settings.sounds, result.status);
     setLastResult(settings.privacy.rememberLastResult ? result.lastResult : null);
     if (result.status === "success" || result.status === "no-changes") {
       showResultBadge(result.lastResult.changedCharacters);

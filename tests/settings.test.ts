@@ -18,6 +18,7 @@ describe("settings schema", () => {
     expect(settings.profile).toBe("default");
     expect(settings.privacy.localOnly).toBe(true);
     expect(settings.floatingButton.enabled).toBe(true);
+    expect(settings.sounds.enabled).toBe(false);
   });
 
   it("мигрирует частичные настройки и не дает отключить localOnly", () => {
@@ -91,6 +92,16 @@ describe("settings schema", () => {
     });
 
     expect(settings.builtInReplacements.emailToElectronicMail).toBe(false);
+  });
+
+  it("сохраняет пользовательский выбор включенных звуков", () => {
+    const settings = normalizeSettings({
+      sounds: {
+        enabled: true
+      }
+    });
+
+    expect(settings.sounds.enabled).toBe(true);
   });
 
   it("нормализует пользовательские правила и удаляет пустой from", () => {

@@ -518,7 +518,7 @@ function SystemSection({
             <FieldContent>
               <FieldTitle>Использовать звуки</FieldTitle>
               <FieldDescription>
-                Сигналы не требуют сети и не содержат пользовательский текст.
+                Звуки выключены по умолчанию и работают только локально.
               </FieldDescription>
             </FieldContent>
           </Field>

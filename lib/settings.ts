@@ -186,7 +186,7 @@ export const DEFAULT_SETTINGS: TypografSettings = {
     showResultBadge: true
   },
   sounds: {
-    enabled: true,
+    enabled: false,
     volume: 8,
     success: "tink",
     noChanges: "pop",
