@@ -97,7 +97,7 @@ describe("result sounds", () => {
     expect(contexts[0]?.createGain).toHaveBeenCalledTimes(1);
     expect(contexts[0]?.oscillator.frequency.setValueAtTime).toHaveBeenCalledWith(880, 3);
     expect(contexts[0]?.gain.gain.exponentialRampToValueAtTime).toHaveBeenCalledWith(
-      0.08,
+      0.36,
       3.015
     );
     expect(contexts[0]?.oscillator.start).toHaveBeenCalledWith(3);

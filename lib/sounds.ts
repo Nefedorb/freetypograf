@@ -32,6 +32,8 @@ const SOUND_PRESETS: Record<SoundName, SoundPreset> = {
   }
 };
 
+const MAX_GAIN = 0.45;
+
 type BrowserWindowWithAudio = Window & {
   AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;
@@ -54,7 +56,9 @@ export function playResultSound(settings: SoundSettings, status: ResultSoundStat
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     const now = context.currentTime;
-    const level = Math.min(Math.max(settings.volume, 0), 10) / 100;
+    const level =
+      Math.round((Math.min(Math.max(settings.volume, 0), 10) / 10) * MAX_GAIN * 1000) /
+      1000;
 
     oscillator.type = preset.type;
     oscillator.frequency.setValueAtTime(preset.frequency, now);
