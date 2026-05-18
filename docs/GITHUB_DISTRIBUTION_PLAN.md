@@ -2,9 +2,9 @@
 
 ## Цель
 
-`Nefedorb/freetypograf` становится единым главным репозиторием FreeTypograf для Windows и macOS.
+`Nefedorb/freetypograf` — единый главный репозиторий FreeTypograf для Windows и macOS.
 
-Один репозиторий содержит:
+Репозиторий содержит:
 
 - общий Next.js UI;
 - общий typograf engine и тесты;
@@ -12,38 +12,80 @@
 - платформенные runtime-ветки через `#[cfg(windows)]` и `#[cfg(target_os = "macos")]`;
 - общие GitHub Releases.
 
-## Структура
+## Структура распространения
 
-- `app/`, `components/`, `lib/`, `tests/` - общий frontend и локальная логика.
-- `src-tauri/` - desktop runtime.
-- `.github/workflows/build-windows.yml` - тестовые Windows artifacts.
-- `.github/workflows/build-macos.yml` - тестовые macOS artifacts.
-- `.github/workflows/release.yml` - релиз по тегу `v*`.
-- `docs/WINDOWS_TESTING.md` - ручная проверка Windows.
-- `docs/MACOS_TESTING.md` - ручная проверка macOS.
-- `docs/RELEASE_PROCESS.md` - порядок публикации версий.
+- `main` — основная ветка разработки.
+- `Build Windows` — тестовые Windows artifacts по push в `main`.
+- `Build macOS` — тестовые macOS artifacts по push в `main`.
+- `Release` — публичная сборка по тегу `v*`.
 
-## Рабочий процесс
+GitHub Releases являются основным каналом распространения для пользователей.
 
-1. Внести законченную правку.
-2. Запустить локальные проверки.
-3. Закоммитить изменения.
-4. Запушить в `main`.
-5. Дождаться зелёных GitHub Actions.
-6. Для публичной версии создать tag и дождаться GitHub Release.
+## Что отправлять пользователям
 
-## Правило безопасности
+Windows:
 
-- Не пушить незавершённые или заведомо сломанные изменения.
-- Не добавлять secrets, tokens, сертификаты и приватные ключи в репозиторий.
-- Не логировать пользовательский текст и clipboard.
-- Runtime-команды не должны принимать пользовательский текст как аргумент.
+- `FreeTypograf_<version>_x64-setup.exe` — рекомендуемый вариант;
+- `FreeTypograf_<version>_x64_en-US.msi` — альтернативный установщик.
 
-## Ближайшие этапы
+macOS:
 
-1. Проверить Windows workflow на GitHub.
-2. Проверить macOS workflow на GitHub.
-3. Создать первый тестовый tag `v0.1.0-test`.
-4. Отдать ссылку на Release тестировщикам.
-5. После обратной связи добавить signing/notarization.
+- `FreeTypograf_<version>_aarch64.dmg` — unsigned DMG для Apple Silicon.
 
+Не отправлять пользователям raw portable `app.exe`. Он допустим только локально и как Actions artifact для быстрой проверки.
+
+## README и скриншоты
+
+Публичная GitHub-страница оформляется через `README.md`.
+
+Скриншоты:
+
+- локальные исходники складываются в `screens/`;
+- `screens/` не коммитится;
+- финальные копии коммитятся в `docs/assets/screenshots/`;
+- README должен ссылаться только на `docs/assets/screenshots/...`.
+
+## Локальные staging assets
+
+- `screens/` — локальная папка свежих скриншотов.
+- `sound/` — локальная папка исходных звуков.
+- `.agents/` — локальная рабочая папка агента.
+
+Эти папки ignored и не должны попадать в GitHub.
+
+Tracked assets:
+
+- `docs/assets/screenshots/` — финальные скриншоты README;
+- `public/sounds/` — рабочие звуки приложения.
+
+## Дизайн-песочница
+
+Для UI-экспериментов используется `D:\code\freetypograf-design-lab`.
+
+Правила:
+
+- без `.git`;
+- без GitHub remote;
+- без push;
+- удачные идеи фиксируются в `planning/DESIGN_LAB.md` внутри песочницы;
+- перенос в основной проект делается отдельным проверенным инкрементом.
+
+## Текущий статус
+
+Текущий публичный release: `v1.0.0`.
+
+Актуальные release assets были перезалиты 2026-05-16 после переноса темы `Modern Minimal + Brand Green` и обновления README screenshots.
+
+Состояние на 2026-05-18:
+
+- всего скачиваний assets: 3;
+- `.dmg`: 1;
+- `setup.exe`: 2;
+- `.msi`: 0.
+
+## Будущие этапы
+
+- Windows code signing certificate.
+- Apple Developer ID signing и notarization.
+- Отдельная проверка macOS Intel/x64, если понадобится.
+- Более формальный changelog для публичных patch-релизов.

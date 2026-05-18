@@ -1,5 +1,31 @@
 # Build Log
 
+## 2026-05-18 Service docs refresh
+
+Сервисные файлы проекта актуализированы под текущее состояние FreeTypograf:
+
+- основной unified-проект закреплён как `D:\code\typograf-macos`;
+- дизайн-песочница закреплена как `D:\code\freetypograf-design-lab`, без GitHub remote и без push;
+- release-процесс уточняет, что public release не должен содержать raw `app.exe`;
+- описан редкий сценарий перезаливки существующего релиза до публичного распространения;
+- staging-папки `screens/`, `sound/` и `.agents/` остаются локальными ignored-папками;
+- tracked assets зафиксированы как `docs/assets/screenshots/` и `public/sounds/`.
+
+Текущий release status:
+
+- `v1.0.0` указывает на commit `aab6e6b`;
+- release assets перезалиты 2026-05-16 после обновления темы и скриншотов;
+- в release есть `.dmg`, `setup.exe` и `.msi`;
+- raw `app.exe` в release отсутствует;
+- скачивания на 2026-05-18: всего 3, `.dmg` 1, `setup.exe` 2, `.msi` 0.
+
+Проверки:
+
+- `git diff --check` - success;
+- `git status --short` - проверен;
+- ignored/tracked assets - проверены;
+- GitHub Release `v1.0.0` assets - проверены.
+
 ## 2026-05-16 Modern Minimal brand theme
 
 Settings UI theme updated to the `Modern Minimal + Brand Green` design proven in the local design lab:

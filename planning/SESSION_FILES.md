@@ -1,43 +1,58 @@
 # Session Files
 
-## Инструкции
+## Основные инструкции
 
-- `agents.md` - основной workflow проекта.
-- `Harness_Engineering_Recommendations.md` - инженерные рекомендации.
-- `DESIGN_SYSTEM.md` - корневые правила визуальной системы.
-- `docs/DESIGN_SYSTEM.md` - короткий указатель на корневые правила.
-- `docs/SECURITY_PROTOCOL.md` - правила безопасности desktop runtime.
-- `docs/ARCHITECTURE.md` - архитектура приложения.
-- `docs/MACOS.md` - заметки по macOS runtime и Accessibility-разрешениям.
-- `docs/WINDOWS_TESTING.md` - чеклист Windows-тестирования.
-- `docs/MACOS_TESTING.md` - чеклист macOS-тестирования.
-- `docs/RELEASE_PROCESS.md` - процесс публикации GitHub Releases.
-- `docs/GITHUB_DISTRIBUTION_PLAN.md` - roadmap единого GitHub-репозитория.
+- `AGENTS.md` — основной workflow агента для unified-проекта.
+- `Harness_Engineering_Recommendations.md` — инженерные рекомендации.
+- `DESIGN_SYSTEM.md` — корневые правила визуальной системы.
+- `docs/DESIGN_SYSTEM.md` — короткая ссылка на корневой дизайн-регламент.
+- `docs/SECURITY_PROTOCOL.md` — правила безопасности desktop runtime.
+- `docs/ARCHITECTURE.md` — архитектура приложения.
 
-## Материалы задачи
+## Дистрибуция и тестирование
 
-- `task/` - локальные рабочие материалы исходного MVP, папка игнорируется git.
-- `screens/` - локальная staging-папка для новых скриншотов README, папка игнорируется git.
-- `sound/` - локальная staging-папка исходных звуков, папка игнорируется git.
+- `docs/RELEASE_PROCESS.md` — процесс GitHub Releases.
+- `docs/GITHUB_DISTRIBUTION_PLAN.md` — модель распространения через GitHub.
+- `docs/WINDOWS_TESTING.md` — ручная проверка Windows.
+- `docs/MACOS_TESTING.md` — ручная проверка macOS и Accessibility.
+- `.github/workflows/build-windows.yml` — тестовые Windows artifacts по push в `main`.
+- `.github/workflows/build-macos.yml` — тестовые macOS artifacts по push в `main`.
+- `.github/workflows/release.yml` — публичный release по тегу `v*`.
 
-## Основные рабочие области
+## Рабочие области проекта
 
-- `package.json`, `pnpm-lock.yaml` - зависимости и команды проекта.
-- `.github/workflows/` - GitHub Actions для Windows, macOS и Release.
-- `app/` - Next.js UI.
-- `components/` - UI-компоненты.
-- `hooks/` - React hooks для настроек.
-- `lib/` - настройки, типографический движок, clipboard-flow helpers и звуки.
-- `public/sounds/` - рабочие звуковые assets, которые попадают в сборку.
-- `docs/assets/screenshots/` - финальные скриншоты для GitHub README.
-- `src-tauri/` - Tauri runtime и desktop-интеграции.
-- `tests/` - unit/smoke тесты.
+- `app/` — Next.js UI.
+- `components/` — UI-компоненты.
+- `hooks/` — React hooks.
+- `lib/` — настройки, типографический движок, clipboard-flow helpers и звуки.
+- `src-tauri/` — Tauri runtime и desktop-интеграции.
+- `tests/` — unit/smoke тесты.
+- `public/sounds/` — tracked звуковые assets приложения.
+- `docs/assets/screenshots/` — tracked финальные скриншоты для README.
+
+## Локальные материалы
+
+- `task/` — локальные материалы задачи, ignored.
+- `screens/` — staging-папка исходных скриншотов README, ignored.
+- `sound/` — staging-папка исходных звуков, ignored.
+- `.agents/` — локальная папка агента, ignored.
+- `D:\code\freetypograf-design-lab` — локальная дизайн-песочница без GitHub.
 
 ## Сборочные артефакты
 
-- `out/` - статический экспорт Next.js, не коммитится.
-- `src-tauri/target/` - Rust/Tauri build output, не коммитится.
-- `src-tauri/target/release/app.exe` - локальный Windows executable для ручной проверки после `pnpm tauri build`.
-- GitHub Actions `Build Windows` может публиковать portable `app.exe` как test artifact.
-- GitHub Release не должен публиковать `app.exe`; для Windows пользователям отдаются только `setup.exe` и `.msi`.
-- macOS `.dmg` собирается через GitHub Actions на macOS runner.
+- `out/` — статический экспорт Next.js, ignored.
+- `.next/` — Next.js build cache, ignored.
+- `src-tauri/target/` — Rust/Tauri build output, ignored.
+- `src-tauri/target/release/app.exe` — локальный Windows executable для ручной проверки после `pnpm tauri build`.
+
+## Текущий релиз
+
+Текущий публичный релиз: `v1.0.0`.
+
+Release assets:
+
+- `FreeTypograf_1.0.0_x64-setup.exe`;
+- `FreeTypograf_1.0.0_x64_en-US.msi`;
+- `FreeTypograf_1.0.0_aarch64.dmg`.
+
+Публичный release не должен содержать raw portable `app.exe`.
