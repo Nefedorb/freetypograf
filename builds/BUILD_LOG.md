@@ -1,22 +1,5 @@
 # Build Log
 
-## 2026-05-19 Tilda safe NBSP
-
-Исправлен Tilda-режим `#nbsp;`, чтобы текст не разлетался в блоках с выравниванием по ширине:
-
-- для `nbspMode: "tilda"` отключены агрессивные NBSP-правила после коротких слов;
-- сохранены полезные `#nbsp;` для инициалов, дат, единиц измерения и валюты;
-- обычные режимы `Unicode NBSP` и `HTML entities` не изменялись.
-
-Проверки:
-
-- `pnpm typecheck` - success;
-- `pnpm test` - success, 48 tests;
-- `pnpm exec eslint .` - success;
-- `pnpm build` - success;
-- `cargo check --manifest-path src-tauri/Cargo.toml` - success;
-- `pnpm tauri build` - success, Windows `app.exe` and installers rebuilt locally.
-
 ## 2026-05-19 Tilda auto profile
 
 Добавлен безопасный автопрофиль для Tilda:

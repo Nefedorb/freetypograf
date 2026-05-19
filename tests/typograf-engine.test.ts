@@ -150,33 +150,14 @@ describe("typograf rules", () => {
 
     expect(output).toBe("В");
   });
-  it("does not bind short words in Tilda NBSP mode", () => {
+  it("outputs Tilda #nbsp markers in Tilda NBSP mode", () => {
     const settings = cloneDefaultSettings();
     settings.nbspMode = "tilda";
 
-    const output = typographText(
-      "не ну смотрите сами канеш, но можно прям магазин норм сделать, но дороже конечно немного)",
-      settings
-    ).output;
+    const output = typographText("не ну смотрите", settings).output;
 
-    expect(output).not.toContain("не#nbsp;ну");
-    expect(output).not.toContain("ну#nbsp;смотрите");
-    expect(output).not.toContain("но#nbsp;можно");
-    expect(output).not.toContain("но#nbsp;дороже");
+    expect(output).toContain("не#nbsp;ну#nbsp;смотрите");
     expect(output).not.toContain("\u00a0");
     expect(output).not.toContain("&nbsp;");
-  });
-
-  it("keeps useful Tilda NBSP markers for initials, dates, numbers, and currency", () => {
-    const settings = cloneDefaultSettings();
-    settings.nbspMode = "tilda";
-
-    const output = typographText("А. С. Пушкин, 12 мая 2026 г., 10 - 12 кг. и цена 1500 руб.", settings).output;
-
-    expect(output).toContain("А.#nbsp;С.#nbsp;Пушкин");
-    expect(output).toContain("12#nbsp;мая");
-    expect(output).toContain("2026#nbsp;г.");
-    expect(output).toContain("12#nbsp;кг");
-    expect(output).toContain("1500#nbsp;₽");
   });
 });
