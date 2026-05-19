@@ -47,6 +47,14 @@ const PROFILE_DISABLE_RULES: Record<TypografSettings["profile"], string[]> = {
   ]
 };
 
+const TILDA_NBSP_DISABLE_RULES = [
+  "common/nbsp/afterShortWord",
+  "common/nbsp/afterShortWordByList",
+  "common/nbsp/beforeShortLastWord",
+  "common/nbsp/beforeShortLastNumber",
+  "ru/nbsp/beforeParticle"
+];
+
 let safeEyo: Eyo | null = null;
 
 export function typographText(input: string, settings: TypografSettings): TypografResult {
@@ -71,6 +79,10 @@ export function typographText(input: string, settings: TypografSettings): Typogr
     ...PROFILE_DISABLE_RULES[settings.profile],
     ...settings.disabledRules
   ]);
+
+  if (settings.nbspMode === "tilda") {
+    TILDA_NBSP_DISABLE_RULES.forEach((rule) => disableRules.add(rule));
+  }
 
   for (const [category, rules] of Object.entries(CATEGORY_RULES) as Array<
     [RuleCategoryId, string[]]
@@ -99,6 +111,7 @@ export function typographText(input: string, settings: TypografSettings): Typogr
 
   let output = tp.execute(input);
   output = applySafeCurrencyRules(output, settings);
+  output = applyTildaSafeUnitRules(output, settings);
 
   if (settings.enabledCategories.yo && settings.yoMode === "safe") {
     output = getSafeEyo().restore(output);
@@ -130,6 +143,17 @@ function applySafeCurrencyRules(output: string, settings: TypografSettings) {
   return output.replace(
     /(^|[^\d])(\d[\d \u00a0\u202f.,]*\d|\d)[ \u00a0\u202f]+(руб|р)\.(?=$|[\s,;:!?])/giu,
     "$1$2\u00a0₽"
+  );
+}
+
+function applyTildaSafeUnitRules(output: string, settings: TypografSettings) {
+  if (settings.nbspMode !== "tilda") {
+    return output;
+  }
+
+  return output.replace(
+    /(^|[^\p{L}\p{N}_])(\d+(?:[.,]\d+)?)[ \u00a0\u202f]+(кг|г|мг|т|мм|см|м|км|м2|м3|м²|м³|л|мл|шт\.?)(?=$|[^\p{L}\p{N}_])/giu,
+    "$1$2\u00a0$3"
   );
 }
 

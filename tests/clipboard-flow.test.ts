@@ -94,15 +94,17 @@ describe("clipboard-flow", () => {
     });
     desktop.readClipboardText
       .mockResolvedValueOnce("old clipboard")
-      .mockResolvedValueOnce("не ну смотрите");
+      .mockResolvedValueOnce("А. С. Пушкин, 12 мая 2026 г. и цена 1500 руб.");
 
     const result = await runClipboardTypograf(settings);
+    const writtenText = desktop.writeClipboardText.mock.calls[0]?.[0] ?? "";
 
     expect(result.status).toBe("success");
-    expect(desktop.writeClipboardText).toHaveBeenNthCalledWith(
-      1,
-      "не#nbsp;ну#nbsp;смотрите"
-    );
+    expect(writtenText).toContain("А.#nbsp;С.#nbsp;Пушкин");
+    expect(writtenText).toContain("12#nbsp;мая");
+    expect(writtenText).toContain("2026#nbsp;г.");
+    expect(writtenText).toContain("1500#nbsp;₽");
+    expect(writtenText).not.toContain("и#nbsp;цена");
   });
 
   it("keeps the selected NBSP mode for non-Tilda windows", async () => {
