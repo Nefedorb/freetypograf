@@ -1,5 +1,23 @@
 # Build Log
 
+## 2026-05-19 Revert Tilda-specific logic
+
+Спецлогика для Tilda удалена, потому что причина разлёта текста оказалась в багованном шрифте конкретного проекта, а не в NBSP-режиме приложения:
+
+- удалены автодетект активного окна и временный Tilda-профиль;
+- удалён режим `Tilda #nbsp;` и связанный UI-тумблер;
+- базовые NBSP-режимы снова только `Unicode NBSP` и `HTML entities`;
+- clipboard-flow снова использует пользовательские настройки без app/window-specific override.
+
+Проверки:
+
+- `pnpm typecheck` - success;
+- `pnpm test` - success, 37 tests;
+- `pnpm exec eslint .` - success;
+- `pnpm build` - success;
+- `cargo check --manifest-path src-tauri/Cargo.toml` - success;
+- `pnpm tauri build` - success, Windows `app.exe` and installers rebuilt locally.
+
 ## 2026-05-18 Service docs refresh
 
 Сервисные файлы проекта актуализированы под текущее состояние FreeTypograf:
