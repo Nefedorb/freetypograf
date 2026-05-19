@@ -21,6 +21,14 @@ struct CommandResult {
     message: String,
 }
 
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ActiveAppContext {
+    platform: String,
+    process_name: String,
+    window_title: String,
+}
+
 #[tauri::command]
 fn show_settings_window(app: AppHandle) -> Result<CommandResult, String> {
     open_settings_window(&app)?;
@@ -80,6 +88,11 @@ fn register_shortcut(
     Ok(ok("Глобальный хоткей обновлен."))
 }
 
+#[tauri::command]
+fn get_active_app_context() -> ActiveAppContext {
+    active_app_context()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -92,7 +105,8 @@ pub fn run() {
             set_floating_position,
             send_copy_shortcut,
             send_paste_shortcut,
-            register_shortcut
+            register_shortcut,
+            get_active_app_context
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -128,6 +142,14 @@ fn ok(message: &str) -> CommandResult {
     CommandResult {
         ok: true,
         message: message.to_string(),
+    }
+}
+
+fn empty_active_app_context(platform: &str) -> ActiveAppContext {
+    ActiveAppContext {
+        platform: platform.to_string(),
+        process_name: String::new(),
+        window_title: String::new(),
     }
 }
 
@@ -275,6 +297,122 @@ fn install_tray(app: &mut App) -> tauri::Result<()> {
         .build(app)?;
 
     Ok(())
+}
+
+#[cfg(all(not(windows), not(target_os = "macos")))]
+fn active_app_context() -> ActiveAppContext {
+    empty_active_app_context("unknown")
+}
+
+#[cfg(target_os = "macos")]
+fn active_app_context() -> ActiveAppContext {
+    use std::process::Command;
+
+    let mut context = empty_active_app_context("macos");
+    let script = r#"
+tell application "System Events"
+  set frontApp to first application process whose frontmost is true
+  set appName to name of frontApp
+  set windowTitle to ""
+  try
+    set windowTitle to name of front window of frontApp
+  end try
+  return appName & linefeed & windowTitle
+end tell
+"#;
+
+    let output = Command::new("osascript").args(["-e", script]).output();
+    let Ok(output) = output else {
+        return context;
+    };
+
+    if !output.status.success() {
+        return context;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut lines = stdout.lines();
+    context.process_name = lines.next().unwrap_or_default().trim().to_string();
+    context.window_title = lines.next().unwrap_or_default().trim().to_string();
+    context
+}
+
+#[cfg(windows)]
+fn active_app_context() -> ActiveAppContext {
+    use windows::Win32::UI::WindowsAndMessaging::GetForegroundWindow;
+
+    let mut context = empty_active_app_context("windows");
+    let hwnd = unsafe { GetForegroundWindow() };
+
+    if hwnd.0.is_null() {
+        return context;
+    }
+
+    context.window_title = get_window_title(hwnd);
+    context.process_name = get_window_process_name(hwnd);
+    context
+}
+
+#[cfg(windows)]
+fn get_window_title(hwnd: windows::Win32::Foundation::HWND) -> String {
+    use windows::Win32::UI::WindowsAndMessaging::{GetWindowTextLengthW, GetWindowTextW};
+
+    let length = unsafe { GetWindowTextLengthW(hwnd) };
+    if length <= 0 {
+        return String::new();
+    }
+
+    let mut buffer = vec![0u16; length as usize + 1];
+    let copied = unsafe { GetWindowTextW(hwnd, &mut buffer) };
+    if copied <= 0 {
+        return String::new();
+    }
+
+    String::from_utf16_lossy(&buffer[..copied as usize])
+}
+
+#[cfg(windows)]
+fn get_window_process_name(hwnd: windows::Win32::Foundation::HWND) -> String {
+    use std::path::Path;
+    use windows::core::PWSTR;
+    use windows::Win32::Foundation::CloseHandle;
+    use windows::Win32::System::Threading::{
+        OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_WIN32,
+        PROCESS_QUERY_LIMITED_INFORMATION,
+    };
+    use windows::Win32::UI::WindowsAndMessaging::GetWindowThreadProcessId;
+
+    let mut process_id = 0u32;
+    unsafe {
+        GetWindowThreadProcessId(hwnd, Some(&mut process_id));
+    }
+
+    if process_id == 0 {
+        return String::new();
+    }
+
+    let process = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, process_id) };
+    let Ok(process) = process else {
+        return String::new();
+    };
+
+    let mut buffer = vec![0u16; 1024];
+    let mut size = buffer.len() as u32;
+    let result = unsafe {
+        QueryFullProcessImageNameW(process, PROCESS_NAME_WIN32, PWSTR(buffer.as_mut_ptr()), &mut size)
+    };
+    let _ = unsafe { CloseHandle(process) };
+
+    if result.is_err() || size == 0 {
+        return String::new();
+    }
+
+    let path = String::from_utf16_lossy(&buffer[..size as usize]);
+    Path::new(&path)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(&path)
+        .to_string()
 }
 
 #[cfg(all(not(windows), not(target_os = "macos")))]

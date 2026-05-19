@@ -1,7 +1,7 @@
-export const SETTINGS_VERSION = 2;
+export const SETTINGS_VERSION = 3;
 
 export type TypografProfile = "default" | "strict" | "minimal";
-export type NbspMode = "unicode" | "html";
+export type NbspMode = "unicode" | "html" | "tilda";
 export type YoMode = "off" | "safe";
 export type AppTheme = "system" | "light" | "dark";
 
@@ -118,6 +118,10 @@ export type BuiltInReplacementSettings = {
   emailToElectronicMail: boolean;
 };
 
+export type AutoProfileSettings = {
+  tilda: boolean;
+};
+
 export type TypografSettings = {
   version: number;
   profile: TypografProfile;
@@ -126,6 +130,7 @@ export type TypografSettings = {
   disabledRules: string[];
   builtInReplacements: BuiltInReplacementSettings;
   customReplacements: CustomReplacementRule[];
+  autoProfiles: AutoProfileSettings;
   nbspMode: NbspMode;
   yoMode: YoMode;
   hotkey: string;
@@ -173,6 +178,9 @@ export const DEFAULT_SETTINGS: TypografSettings = {
     emailToElectronicMail: true
   },
   customReplacements: [],
+  autoProfiles: {
+    tilda: true
+  },
   nbspMode: "unicode",
   yoMode: "safe",
   hotkey: "CommandOrControl+Shift+T",
@@ -207,6 +215,7 @@ export function cloneDefaultSettings(): TypografSettings {
     disabledRules: [...DEFAULT_SETTINGS.disabledRules],
     builtInReplacements: { ...DEFAULT_SETTINGS.builtInReplacements },
     customReplacements: DEFAULT_SETTINGS.customReplacements.map((rule) => ({ ...rule })),
+    autoProfiles: { ...DEFAULT_SETTINGS.autoProfiles },
     floatingButton: { ...DEFAULT_SETTINGS.floatingButton },
     sounds: { ...DEFAULT_SETTINGS.sounds },
     privacy: { ...DEFAULT_SETTINGS.privacy }
@@ -232,7 +241,7 @@ export function normalizeSettings(value: unknown): TypografSettings {
   }
 
   const profile = isProfile(incoming.profile) ? incoming.profile : defaults.profile;
-  const nbspMode = incoming.nbspMode === "html" ? "html" : defaults.nbspMode;
+  const nbspMode = normalizeNbspMode(incoming.nbspMode, defaults.nbspMode);
   const yoMode = incoming.yoMode === "off" ? "off" : defaults.yoMode;
   const theme = isTheme(incoming.theme) ? incoming.theme : defaults.theme;
   const incomingVersion = typeof incoming.version === "number" ? incoming.version : 0;
@@ -256,6 +265,7 @@ export function normalizeSettings(value: unknown): TypografSettings {
       : defaults.disabledRules,
     builtInReplacements: normalizeBuiltInReplacements(incoming.builtInReplacements),
     customReplacements: normalizeCustomReplacements(incoming.customReplacements),
+    autoProfiles: normalizeAutoProfiles(incoming.autoProfiles),
     nbspMode,
     yoMode,
     hotkey: typeof incoming.hotkey === "string" && incoming.hotkey.trim()
@@ -341,6 +351,10 @@ function isTheme(value: unknown): value is AppTheme {
   return value === "system" || value === "light" || value === "dark";
 }
 
+function normalizeNbspMode(value: unknown, fallback: NbspMode): NbspMode {
+  return value === "unicode" || value === "html" || value === "tilda" ? value : fallback;
+}
+
 function normalizeBuiltInReplacements(value: unknown): BuiltInReplacementSettings {
   const defaults = cloneDefaultSettings().builtInReplacements;
   if (!isRecord(value)) {
@@ -352,6 +366,17 @@ function normalizeBuiltInReplacements(value: unknown): BuiltInReplacementSetting
       typeof value.emailToElectronicMail === "boolean"
         ? value.emailToElectronicMail
         : defaults.emailToElectronicMail
+  };
+}
+
+function normalizeAutoProfiles(value: unknown): AutoProfileSettings {
+  const defaults = cloneDefaultSettings().autoProfiles;
+  if (!isRecord(value)) {
+    return defaults;
+  }
+
+  return {
+    tilda: typeof value.tilda === "boolean" ? value.tilda : defaults.tilda
   };
 }
 
