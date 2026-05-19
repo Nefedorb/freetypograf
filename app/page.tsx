@@ -64,7 +64,6 @@ import {
   MAX_CUSTOM_REPLACEMENTS,
   RULE_CATEGORIES,
   type CustomReplacementRule,
-  type NbspMode,
   type RuleCategoryId,
   type TypografProfile
 } from "@/lib/settings";
@@ -619,7 +618,7 @@ function LanguagesSection({
           <FieldLabel>NBSP</FieldLabel>
           <Select
             value={settings.nbspMode}
-            onValueChange={(nbspMode: NbspMode) =>
+            onValueChange={(nbspMode: "unicode" | "html") =>
               patchSettings((current) => ({ ...current, nbspMode }))
             }
           >
@@ -629,33 +628,8 @@ function LanguagesSection({
             <SelectContent>
               <SelectItem value="unicode">Unicode NBSP</SelectItem>
               <SelectItem value="html">HTML entities</SelectItem>
-              <SelectItem value="tilda">Tilda #nbsp;</SelectItem>
             </SelectContent>
           </Select>
-          <FieldDescription>
-            Для Tilda выбирайте Tilda #nbsp;, для обычных редакторов — Unicode NBSP.
-          </FieldDescription>
-        </Field>
-
-        <Field orientation="horizontal">
-          <Switch
-            checked={settings.autoProfiles.tilda}
-            onCheckedChange={(tilda) =>
-              patchSettings((current) => ({
-                ...current,
-                autoProfiles: {
-                  ...current.autoProfiles,
-                  tilda
-                }
-              }))
-            }
-          />
-          <FieldContent>
-            <FieldTitle>Определять Tilda автоматически</FieldTitle>
-            <FieldDescription>
-              Для Tilda используется формат #nbsp;, для остальных приложений — выбранный NBSP.
-            </FieldDescription>
-          </FieldContent>
         </Field>
 
         <Field orientation="horizontal">

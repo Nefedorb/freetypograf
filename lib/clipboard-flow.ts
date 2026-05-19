@@ -1,13 +1,11 @@
 import {
   delay,
-  getActiveAppContext,
   readClipboardText,
   sendCopyShortcut,
   sendPasteShortcut,
   writeClipboardText
 } from "@/lib/desktop";
 import type { LastResult, TypografSettings } from "@/lib/settings";
-import { resolveSettingsForActiveContext } from "@/lib/active-app-context";
 import { typographText } from "@/lib/typograf-engine";
 
 export type ClipboardFlowResult = {
@@ -21,7 +19,6 @@ export async function runClipboardTypograf(settings: TypografSettings): Promise<
   }
 
   try {
-    const activeContext = await safeGetActiveAppContext();
     const previousClipboard = await safeReadClipboard();
 
     await sendCopyShortcut();
@@ -32,8 +29,7 @@ export async function runClipboardTypograf(settings: TypografSettings): Promise<
       return buildFlowResult("no-selection", false, 0, 0, "Не удалось получить выделенный текст.");
     }
 
-    const effectiveSettings = resolveSettingsForActiveContext(settings, activeContext);
-    const result = typographText(selectedText, effectiveSettings);
+    const result = typographText(selectedText, settings);
     if (!result.changed) {
       return buildFlowResult("no-changes", false, 0, 0, "Изменений нет.");
     }
@@ -84,13 +80,5 @@ async function safeReadClipboard() {
     return await readClipboardText();
   } catch {
     return "";
-  }
-}
-
-async function safeGetActiveAppContext() {
-  try {
-    return await getActiveAppContext();
-  } catch {
-    return null;
   }
 }

@@ -1,10 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActiveAppContext } from "@/lib/active-app-context";
 import { cloneDefaultSettings } from "@/lib/settings";
 
 const desktop = vi.hoisted(() => ({
   delay: vi.fn(() => Promise.resolve()),
-  getActiveAppContext: vi.fn<() => Promise<ActiveAppContext | null>>(() => Promise.resolve(null)),
   readClipboardText: vi.fn<() => Promise<string>>(),
   sendCopyShortcut: vi.fn(() => Promise.resolve()),
   sendPasteShortcut: vi.fn(() => Promise.resolve()),
@@ -82,63 +80,5 @@ describe("clipboard-flow", () => {
     expect(result.status).toBe("no-selection");
     expect(logSpy).not.toHaveBeenCalled();
     expect(errorSpy).not.toHaveBeenCalled();
-  });
-  it("uses Tilda #nbsp mode when active window looks like Tilda", async () => {
-    const { runClipboardTypograf } = await import("@/lib/clipboard-flow");
-    const settings = cloneDefaultSettings();
-
-    desktop.getActiveAppContext.mockResolvedValueOnce({
-      platform: "windows",
-      processName: "chrome.exe",
-      windowTitle: "Tilda Publishing"
-    });
-    desktop.readClipboardText
-      .mockResolvedValueOnce("old clipboard")
-      .mockResolvedValueOnce("не ну смотрите");
-
-    const result = await runClipboardTypograf(settings);
-
-    expect(result.status).toBe("success");
-    expect(desktop.writeClipboardText).toHaveBeenNthCalledWith(
-      1,
-      "не#nbsp;ну#nbsp;смотрите"
-    );
-  });
-
-  it("keeps the selected NBSP mode for non-Tilda windows", async () => {
-    const { runClipboardTypograf } = await import("@/lib/clipboard-flow");
-    const settings = cloneDefaultSettings();
-
-    desktop.getActiveAppContext.mockResolvedValueOnce({
-      platform: "windows",
-      processName: "WINWORD.EXE",
-      windowTitle: "Document1 - Word"
-    });
-    desktop.readClipboardText
-      .mockResolvedValueOnce("old clipboard")
-      .mockResolvedValueOnce("не ну смотрите");
-
-    const result = await runClipboardTypograf(settings);
-
-    expect(result.status).toBe("success");
-    expect(desktop.writeClipboardText).toHaveBeenNthCalledWith(
-      1,
-      "не\u00a0ну\u00a0смотрите"
-    );
-  });
-
-  it("does not fail when active window detection fails", async () => {
-    const { runClipboardTypograf } = await import("@/lib/clipboard-flow");
-    const settings = cloneDefaultSettings();
-
-    desktop.getActiveAppContext.mockRejectedValueOnce(new Error("blocked"));
-    desktop.readClipboardText
-      .mockResolvedValueOnce("old clipboard")
-      .mockResolvedValueOnce('"ok" -- text');
-
-    const result = await runClipboardTypograf(settings);
-
-    expect(result.status).toBe("success");
-    expect(desktop.sendCopyShortcut).toHaveBeenCalledTimes(1);
   });
 });

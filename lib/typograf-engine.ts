@@ -1,6 +1,6 @@
 import Typograf from "typograf";
 import { Eyo, safeDictionary } from "eyo-kernel";
-import type { NbspMode, RuleCategoryId, TypografSettings } from "@/lib/settings";
+import type { RuleCategoryId, TypografSettings } from "@/lib/settings";
 
 export type TypografStats = {
   changedCharacters: number;
@@ -106,7 +106,9 @@ export function typographText(input: string, settings: TypografSettings): Typogr
     warnings.push("Ёфикация отключена.");
   }
 
-  output = applyNbspMode(output, settings.nbspMode);
+  if (settings.nbspMode === "html") {
+    output = output.replace(/\u00a0/g, "&nbsp;").replace(/\u202f/g, "&#8239;");
+  }
 
   if (settings.builtInReplacements.emailToElectronicMail) {
     output = applyBuiltInReplacementRules(output);
@@ -138,18 +140,6 @@ function applyBuiltInReplacementRules(output: string) {
     /(^|[^\p{L}\p{N}_@./:-])(e-mail|email)(?![\p{L}\p{N}_@-]|\.\p{L})/giu,
     "$1электронная почта"
   );
-}
-
-function applyNbspMode(output: string, mode: NbspMode) {
-  if (mode === "html") {
-    return output.replace(/\u00a0/g, "&nbsp;").replace(/\u202f/g, "&#8239;");
-  }
-
-  if (mode === "tilda") {
-    return output.replace(/[\u00a0\u202f]/g, "#nbsp;");
-  }
-
-  return output;
 }
 
 function applyCustomReplacementRules(output: string, settings: TypografSettings) {

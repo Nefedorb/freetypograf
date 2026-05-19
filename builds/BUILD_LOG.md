@@ -1,23 +1,5 @@
 # Build Log
 
-## 2026-05-19 Tilda auto profile
-
-Добавлен безопасный автопрофиль для Tilda:
-
-- перед clipboard-flow приложение читает только метаданные активного окна: `platform`, `processName` и `windowTitle`;
-- если активное окно похоже на Tilda, временно применяется NBSP-режим `Tilda #nbsp;`;
-- для остальных приложений сохраняется выбранный пользователем NBSP-режим;
-- содержимое выделения, clipboard и заголовки окон не логируются и не сохраняются.
-
-Проверки:
-
-- `pnpm typecheck` - success;
-- `pnpm test` - success, 47 tests;
-- `pnpm exec eslint .` - success;
-- `pnpm build` - success;
-- `cargo check --manifest-path src-tauri/Cargo.toml` - success;
-- `pnpm tauri build` - success, Windows `app.exe` and installers rebuilt locally.
-
 ## 2026-05-18 Service docs refresh
 
 Сервисные файлы проекта актуализированы под текущее состояние FreeTypograf:

@@ -19,7 +19,6 @@ describe("settings schema", () => {
     expect(settings.privacy.localOnly).toBe(true);
     expect(settings.floatingButton.enabled).toBe(true);
     expect(settings.sounds.enabled).toBe(false);
-    expect(settings.autoProfiles.tilda).toBe(true);
   });
 
   it("мигрирует частичные настройки и не дает отключить localOnly", () => {
@@ -176,17 +175,5 @@ describe("settings schema", () => {
     });
 
     expect(settings.customReplacements).toHaveLength(MAX_CUSTOM_REPLACEMENTS);
-  });
-  it("supports Tilda NBSP and migrates auto profiles", () => {
-    const settings = normalizeSettings({
-      version: 2,
-      nbspMode: "tilda",
-      autoProfiles: {
-        tilda: false
-      }
-    });
-
-    expect(settings.nbspMode).toBe("tilda");
-    expect(settings.autoProfiles.tilda).toBe(false);
   });
 });

@@ -150,14 +150,4 @@ describe("typograf rules", () => {
 
     expect(output).toBe("В");
   });
-  it("outputs Tilda #nbsp markers in Tilda NBSP mode", () => {
-    const settings = cloneDefaultSettings();
-    settings.nbspMode = "tilda";
-
-    const output = typographText("не ну смотрите", settings).output;
-
-    expect(output).toContain("не#nbsp;ну#nbsp;смотрите");
-    expect(output).not.toContain("\u00a0");
-    expect(output).not.toContain("&nbsp;");
-  });
 });

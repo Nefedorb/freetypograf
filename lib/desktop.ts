@@ -1,5 +1,3 @@
-import type { ActiveAppContext } from "@/lib/active-app-context";
-
 export type CommandResult = {
   ok: boolean;
   message: string;
@@ -32,18 +30,6 @@ export async function setFloatingWindowVisible(visible: boolean) {
   }
 
   await invokeCommand<CommandResult>("set_floating_window_visible", { visible });
-}
-
-export async function getActiveAppContext(): Promise<ActiveAppContext | null> {
-  if (!isTauriRuntime()) {
-    return null;
-  }
-
-  try {
-    return await invokeCommand<ActiveAppContext>("get_active_app_context");
-  } catch {
-    return null;
-  }
 }
 
 export async function sendCopyShortcut() {
