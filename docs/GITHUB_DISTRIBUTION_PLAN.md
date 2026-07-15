@@ -74,14 +74,14 @@ Tracked assets:
 
 Текущий публичный release: `v1.0.1`.
 
-Актуальные release assets были перезалиты 2026-05-16 после переноса темы `Modern Minimal + Brand Green` и обновления README screenshots.
+Релиз опубликован 2026-07-15 из commit `28ef6989a88b950550c92f19a2403b8e0655e4ac`.
 
-Состояние на 2026-05-18:
-
-- всего скачиваний assets: 3;
-- `.dmg`: 1;
-- `setup.exe`: 2;
-- `.msi`: 0.
+- Страница релиза: [FreeTypograf v1.0.1](https://github.com/Nefedorb/freetypograf/releases/tag/v1.0.1).
+- Workflow: [Release run 29409538736](https://github.com/Nefedorb/freetypograf/actions/runs/29409538736).
+- Windows build, macOS build и publish job завершены успешно.
+- Опубликованы `FreeTypograf_1.0.1_x64-setup.exe`, `FreeTypograf_1.0.1_x64_en-US.msi` и `FreeTypograf_1.0.1_aarch64.dmg`.
+- Raw portable `app.exe` в release отсутствует.
+- Сборки остаются unsigned.
 
 ## Будущие этапы
 

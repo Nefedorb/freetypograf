@@ -25,6 +25,17 @@
 - `cargo check --manifest-path src-tauri/Cargo.toml` - успешно;
 - `pnpm tauri build` - успешно, Windows app и installers пересобраны.
 
+Публикация:
+
+- release commit: `28ef6989a88b950550c92f19a2403b8e0655e4ac`;
+- tag: `v1.0.1`;
+- workflow [Release run 29409538736](https://github.com/Nefedorb/freetypograf/actions/runs/29409538736) - успешно;
+- Windows, macOS и publish jobs - успешно;
+- опубликован [FreeTypograf v1.0.1](https://github.com/Nefedorb/freetypograf/releases/tag/v1.0.1);
+- assets: `FreeTypograf_1.0.1_x64-setup.exe`, `FreeTypograf_1.0.1_x64_en-US.msi`, `FreeTypograf_1.0.1_aarch64.dmg`;
+- raw portable `app.exe` в публичном release отсутствует;
+- Windows и macOS сборки unsigned.
+
 ## 2026-05-19 Revert Tilda-specific logic
 
 Спецлогика для Tilda удалена, потому что причина разлёта текста оказалась в багованном шрифте конкретного проекта, а не в NBSP-режиме приложения:

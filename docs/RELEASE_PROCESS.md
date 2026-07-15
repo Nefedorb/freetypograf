@@ -96,10 +96,14 @@ git push origin +v1.0.0
 
 Особенности текущего релиза:
 
+- опубликован 2026-07-15: [FreeTypograf v1.0.1](https://github.com/Nefedorb/freetypograf/releases/tag/v1.0.1);
+- tag `v1.0.1` указывает на release commit `28ef6989a88b950550c92f19a2403b8e0655e4ac`;
+- workflow [Release run 29409538736](https://github.com/Nefedorb/freetypograf/actions/runs/29409538736) завершён успешно для Windows, macOS и publish job;
 - исправлено исчезновение floating-кнопки при drag и рассинхронизации видимости;
 - отдельный `X` вынесен за пределы drag-зоны;
 - добавлены безопасный clamp позиции и сброс позиции в настройках;
 - Windows и macOS используют единое исправленное floating-поведение;
+- опубликованы `FreeTypograf_1.0.1_x64-setup.exe`, `FreeTypograf_1.0.1_x64_en-US.msi` и `FreeTypograf_1.0.1_aarch64.dmg`;
 - release не содержит raw `app.exe`;
 - сборки unsigned: без Apple Developer ID, notarization и Windows code signing certificate.
 

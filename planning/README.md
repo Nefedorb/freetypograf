@@ -28,6 +28,8 @@ FreeTypograf — локальное desktop-приложение для Windows 
 - Windows: `FreeTypograf_1.0.1_x64-setup.exe`, `FreeTypograf_1.0.1_x64_en-US.msi`.
 - macOS: `FreeTypograf_1.0.1_aarch64.dmg`.
 - Raw portable `app.exe` в публичный release не прикладывается.
+- Публичная страница: [FreeTypograf v1.0.1](https://github.com/Nefedorb/freetypograf/releases/tag/v1.0.1).
+- Release commit и tag: `28ef6989a88b950550c92f19a2403b8e0655e4ac`.
 
 ## Локальные staging-папки
 
