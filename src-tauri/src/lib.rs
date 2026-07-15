@@ -3,7 +3,7 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     utils::config::Color,
-    App, AppHandle, Emitter, Manager, PhysicalPosition, Position, UserAttentionType, WebviewUrl,
+    App, AppHandle, Emitter, LogicalPosition, Manager, Position, UserAttentionType, WebviewUrl,
     WebviewWindow, WebviewWindowBuilder, WindowEvent,
 };
 
@@ -29,19 +29,7 @@ fn show_settings_window(app: AppHandle) -> Result<CommandResult, String> {
 
 #[tauri::command]
 fn set_floating_window_visible(app: AppHandle, visible: bool) -> Result<CommandResult, String> {
-    let window = app
-        .get_webview_window("floating")
-        .ok_or_else(|| "Плавающая кнопка не найдена.".to_string())?;
-
-    if visible {
-        window.show().map_err(|error| error.to_string())?;
-        window
-            .set_always_on_top(true)
-            .map_err(|error| error.to_string())?;
-        configure_floating_window(&window)?;
-    } else {
-        window.hide().map_err(|error| error.to_string())?;
-    }
+    set_floating_visibility(&app, visible)?;
 
     Ok(ok("Видимость плавающей кнопки обновлена."))
 }
@@ -53,7 +41,7 @@ fn set_floating_position(app: AppHandle, x: i32, y: i32) -> Result<CommandResult
         .ok_or_else(|| "Плавающая кнопка не найдена.".to_string())?;
 
     window
-        .set_position(Position::Physical(PhysicalPosition::new(x, y)))
+        .set_position(Position::Logical(LogicalPosition::new(x as f64, y as f64)))
         .map_err(|error| error.to_string())?;
     Ok(ok("Позиция плавающей кнопки обновлена."))
 }
@@ -129,6 +117,25 @@ fn ok(message: &str) -> CommandResult {
         ok: true,
         message: message.to_string(),
     }
+}
+
+fn set_floating_visibility(app: &AppHandle, visible: bool) -> Result<(), String> {
+    let window = app
+        .get_webview_window("floating")
+        .ok_or_else(|| "Плавающая кнопка не найдена.".to_string())?;
+
+    if visible {
+        window.show().map_err(|error| error.to_string())?;
+        window
+            .set_always_on_top(true)
+            .map_err(|error| error.to_string())?;
+        configure_floating_window(&window)?;
+    } else {
+        window.hide().map_err(|error| error.to_string())?;
+    }
+
+    let _ = app.emit("typograf-floating-visibility", visible);
+    Ok(())
 }
 
 fn open_settings_window(app: &AppHandle) -> Result<(), String> {
@@ -246,13 +253,7 @@ fn install_tray(app: &mut App) -> tauri::Result<()> {
             "toggle_button" => {
                 if let Some(window) = app.get_webview_window("floating") {
                     let visible = window.is_visible().unwrap_or(false);
-                    if visible {
-                        let _ = window.hide();
-                    } else {
-                        let _ = window.show();
-                        let _ = window.set_always_on_top(true);
-                        let _ = configure_floating_window(&window);
-                    }
+                    let _ = set_floating_visibility(app, !visible);
                 }
             }
             "toggle_pause" => {

@@ -72,7 +72,7 @@ Tracked assets:
 
 ## Текущий статус
 
-Текущий публичный release: `v1.0.0`.
+Текущий публичный release: `v1.0.1`.
 
 Актуальные release assets были перезалиты 2026-05-16 после переноса темы `Modern Minimal + Brand Green` и обновления README screenshots.
 

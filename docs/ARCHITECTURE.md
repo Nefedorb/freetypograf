@@ -28,6 +28,8 @@ Runtime содержит только системные интеграции:
 - глобальный shortcut через `tauri-plugin-global-shortcut`;
 - copy/paste через Windows `SendInput` в Windows-ветке и macOS `System Events` в macOS-ветке;
 - Windows `WS_EX_NOACTIVATE` или macOS non-focusable window для floating-окна, чтобы клик по кнопке не забирал фокус у приложения с выделенным текстом.
+- Floating-позиция хранится в logical coordinates, ограничивается рабочей областью текущего экрана и синхронизируется с tray visibility event.
+- Floating-окно имеет запас вокруг 64px круга: отдельный `X` находится снаружи и скрывает кнопку только по явному клику.
 
 Runtime-команды не принимают пользовательский текст как аргумент.
 

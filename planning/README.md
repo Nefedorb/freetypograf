@@ -21,12 +21,12 @@ FreeTypograf — локальное desktop-приложение для Windows 
 
 ## Готовность релиза
 
-Текущий публичный релиз: `v1.0.0`.
+Текущий публичный релиз: `v1.0.1`.
 
 Релизные assets:
 
-- Windows: `FreeTypograf_1.0.0_x64-setup.exe`, `FreeTypograf_1.0.0_x64_en-US.msi`.
-- macOS: `FreeTypograf_1.0.0_aarch64.dmg`.
+- Windows: `FreeTypograf_1.0.1_x64-setup.exe`, `FreeTypograf_1.0.1_x64_en-US.msi`.
+- macOS: `FreeTypograf_1.0.1_aarch64.dmg`.
 - Raw portable `app.exe` в публичный release не прикладывается.
 
 ## Локальные staging-папки

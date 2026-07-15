@@ -181,8 +181,25 @@ export default function SettingsPage() {
   }, [settings.hotkey]);
 
   useEffect(() => {
-    void setFloatingWindowVisible(settings.floatingButton.enabled);
+    void setFloatingWindowVisible(settings.floatingButton.enabled).catch(() => undefined);
   }, [settings.floatingButton.enabled]);
+
+  useEffect(() => {
+    let cleanup: (() => void) | undefined;
+    void onTauriEvent<boolean>("typograf-floating-visibility", (visible) => {
+      patchSettings((current) => ({
+        ...current,
+        floatingButton: {
+          ...current.floatingButton,
+          enabled: visible
+        }
+      }));
+    }).then((unlisten) => {
+      cleanup = unlisten;
+    });
+
+    return () => cleanup?.();
+  }, [patchSettings]);
 
   useEffect(() => {
     let cleanup: (() => void) | undefined;
@@ -1003,6 +1020,30 @@ function ButtonSection({
               }))
             }
           />
+        </Field>
+        <Field>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const defaults = cloneDefaultSettings().floatingButton;
+                patchSettings((current) => ({
+                  ...current,
+                  floatingButton: {
+                    ...current.floatingButton,
+                    x: defaults.x,
+                    y: defaults.y
+                  }
+                }));
+              }}
+            >
+              <RotateCcw data-icon="inline-start" />
+              Сбросить позицию
+            </Button>
+          </div>
+          <FieldDescription>
+            Если кнопка оказалась за пределами экрана, сброс вернет её в безопасную стартовую позицию.
+          </FieldDescription>
         </Field>
       </FieldGroup>
     </PreferencePanel>

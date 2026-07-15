@@ -1,5 +1,30 @@
 # Build Log
 
+## 2026-07-15 FreeTypograf 1.0.1 — floating button recovery
+
+Исправлена потеря floating-кнопки при случайном drag или скрытии:
+
+- версия приложения обновлена до `1.0.1` для Windows и macOS;
+- `X` возвращен как отдельная кнопка за пределами круга, поэтому он не пересекается с drag-зоной;
+- floating-окно увеличено до 112×112, чтобы внешний `X` не обрезался;
+- клик по внешнему `X` сохраняет `floatingButton.enabled: false` и скрывает окно;
+- drag-позиция ограничивается границами всей floating-области, включая внешний `X`;
+- drag-позиция ограничивается рабочей областью экрана для всего floating-окна;
+- Tauri получает logical coordinates вместо смешения CSS и physical pixels;
+- обновления native position throttled через `requestAnimationFrame`, ошибки IPC не остаются необработанными;
+- tray visibility синхронизируется с `floatingButton.enabled`;
+- в настройках добавлен сброс позиции в безопасные стартовые координаты;
+- добавлены unit-тесты для clamp позиции и отрицательных координат мониторов.
+
+Проверки:
+
+- `pnpm typecheck` - успешно;
+- `pnpm test` - успешно, 40 тестов;
+- `pnpm exec eslint .` - успешно;
+- `pnpm build` - успешно;
+- `cargo check --manifest-path src-tauri/Cargo.toml` - успешно;
+- `pnpm tauri build` - успешно, Windows app и installers пересобраны.
+
 ## 2026-05-19 Revert Tilda-specific logic
 
 Спецлогика для Tilda удалена, потому что причина разлёта текста оказалась в багованном шрифте конкретного проекта, а не в NBSP-режиме приложения:

@@ -47,12 +47,12 @@
 
 ## Текущий релиз
 
-Текущий публичный релиз: `v1.0.0`.
+Текущий публичный релиз: `v1.0.1`.
 
 Release assets:
 
-- `FreeTypograf_1.0.0_x64-setup.exe`;
-- `FreeTypograf_1.0.0_x64_en-US.msi`;
-- `FreeTypograf_1.0.0_aarch64.dmg`.
+- `FreeTypograf_1.0.1_x64-setup.exe`;
+- `FreeTypograf_1.0.1_x64_en-US.msi`;
+- `FreeTypograf_1.0.1_aarch64.dmg`.
 
 Публичный release не должен содержать raw portable `app.exe`.
